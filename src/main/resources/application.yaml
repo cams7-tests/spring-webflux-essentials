@@ -3,3 +3,10 @@ spring:
     url: r2dbc:postgresql://localhost:15432/spring_webflux_essentials?schema=anime
     username: spring_webflux_essentials
     password: abc12345
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          r2dbc: DEBUG
+
