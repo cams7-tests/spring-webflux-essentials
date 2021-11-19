@@ -9,14 +9,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.blockhound.BlockHound;
 import reactor.blockhound.BlockingOperationError;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 public class AnimeServiceTests {
@@ -30,6 +38,12 @@ public class AnimeServiceTests {
   @BeforeAll
   public static void blockHoundSetup() {
     BlockHound.install();
+  }
+
+  @BeforeEach
+  public void setUp() {
+    BDDMockito.when(repository.findAll()).thenReturn(Flux.just(anime));
+    BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.just(anime));
   }
 
   @Test
@@ -48,5 +62,30 @@ public class AnimeServiceTests {
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
     }
+  }
+
+  @Test
+  @DisplayName("findAll returns a flux of anime when successfull")
+  public void findAll_ReturnFluxOfAnime_WhenSuccessful() {
+    StepVerifier.create(service.findAll()).expectSubscription().expectNext(anime).verifyComplete();
+  }
+
+  @Test
+  @DisplayName("findById returns a mono with anime when it exists")
+  public void findById_ReturnMonoWithAnime_WhenItExists() {
+    StepVerifier.create(service.findById(1L))
+        .expectSubscription()
+        .expectNext(anime)
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("findById returns error when mono empty is returned")
+  public void findById_ReturnError_WhenEmptyMonoIsReturned() {
+    BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
+    StepVerifier.create(service.findById(1L))
+        .expectSubscription()
+        .expectError(ResponseStatusException.class)
+        .verify();
   }
 }

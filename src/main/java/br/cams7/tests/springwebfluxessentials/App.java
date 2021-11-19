@@ -7,12 +7,11 @@ import reactor.blockhound.BlockHound;
 @SpringBootApplication
 public class App {
 
-  // static {
-  //  BlockHound.install();
-  // }
+  static {
+    BlockHound.install();
+  }
 
   public static void main(String[] args) {
-    BlockHound.install();
     SpringApplication.run(App.class, args);
   }
 }
