@@ -6,6 +6,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,9 +42,15 @@ public class AnimeController {
     return service.save(anime);
   }
 
-  @PutMapping
+  @PutMapping(path = "{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public Mono<Void> update(@Valid @RequestBody Anime anime) {
-    return service.update(anime);
+  public Mono<Void> update(@PathVariable Long id, @Valid @RequestBody Anime anime) {
+    return service.update(anime.withId(id));
+  }
+
+  @DeleteMapping(path = "{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public Mono<Void> delete(@PathVariable Long id) {
+    return service.delete(id);
   }
 }
