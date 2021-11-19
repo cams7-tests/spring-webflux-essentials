@@ -22,6 +22,17 @@ public class AnimeService {
     return repository.findById(id).switchIfEmpty(monoResponseStatusNotFoundException()); // .log();
   }
 
+  public Mono<Anime> save(Anime anime) {
+    return repository.save(anime);
+  }
+
+  public Mono<Void> update(Anime anime) {
+    return findById(anime.getId())
+        .map(animeFound -> anime.withId(animeFound.getId()))
+        .flatMap(repository::save)
+        .thenEmpty(Mono.empty());
+  }
+
   private static <T> Mono<T> monoResponseStatusNotFoundException() {
     return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
