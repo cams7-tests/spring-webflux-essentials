@@ -121,17 +121,15 @@ public class AnimeServiceTests {
   @Test
   @DisplayName("update save updated anime when successfull")
   public void update_SaveUpdatedAnime_WhenSuccessful() {
-    var validAnime = AnimeCreator.createValidAnime();
-    BDDMockito.when(repository.save(validAnime)).thenReturn(Mono.just(anime));
-    StepVerifier.create(service.update(validAnime)).expectSubscription().verifyComplete();
+    BDDMockito.when(repository.save(anime)).thenReturn(Mono.just(anime));
+    StepVerifier.create(service.update(anime)).expectSubscription().verifyComplete();
   }
 
   @Test
   @DisplayName("update returns error when mono empty is returned")
   public void update_ReturnError_WhenEmptyMonoIsReturned() {
-    var validAnime = AnimeCreator.createValidAnime();
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
-    StepVerifier.create(service.update(validAnime))
+    StepVerifier.create(service.update(anime))
         .expectSubscription()
         .expectError(ResponseStatusException.class)
         .verify();

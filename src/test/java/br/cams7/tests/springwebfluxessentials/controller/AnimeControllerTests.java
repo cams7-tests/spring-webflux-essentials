@@ -44,7 +44,7 @@ public class AnimeControllerTests {
     BDDMockito.when(service.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.just(anime));
     BDDMockito.when(service.save(AnimeCreator.createAnimeToBeSaved())).thenReturn(Mono.just(anime));
     BDDMockito.when(service.delete(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
-    BDDMockito.when(service.update(AnimeCreator.createValidAnime())).thenReturn(Mono.empty());
+    BDDMockito.when(service.update(anime)).thenReturn(Mono.empty());
   }
 
   @Test
@@ -66,7 +66,7 @@ public class AnimeControllerTests {
   }
 
   @Test
-  @DisplayName("findAll listAll a flux of anime when successfull")
+  @DisplayName("listAll returns a flux of anime when successfull")
   public void listAll_ReturnFluxOfAnime_WhenSuccessful() {
     StepVerifier.create(controller.listAll())
         .expectSubscription()
@@ -102,8 +102,6 @@ public class AnimeControllerTests {
   @Test
   @DisplayName("update save updated anime when successfull")
   public void update_SaveUpdatedAnime_WhenSuccessful() {
-    StepVerifier.create(controller.update(1L, AnimeCreator.createValidAnime()))
-        .expectSubscription()
-        .verifyComplete();
+    StepVerifier.create(controller.update(1L, anime)).expectSubscription().verifyComplete();
   }
 }
