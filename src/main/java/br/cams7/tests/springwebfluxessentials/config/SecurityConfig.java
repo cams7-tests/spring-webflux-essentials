@@ -24,6 +24,8 @@ public class SecurityConfig {
         .hasRole("ADMIN")
         .pathMatchers(HttpMethod.GET, "/animes/**")
         .hasRole("USER")
+        .pathMatchers(HttpMethod.GET, "/webjars/**", "/v3/api-docs/**", "/swagger-ui.html")
+        .permitAll()
         .anyExchange()
         .authenticated()
         .and()
