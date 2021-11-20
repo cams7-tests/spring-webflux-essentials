@@ -1,9 +1,7 @@
 package br.cams7.tests.springwebfluxessentials.integration;
 
 import br.cams7.tests.springwebfluxessentials.domain.Anime;
-import br.cams7.tests.springwebfluxessentials.exception.CustomAttributes;
 import br.cams7.tests.springwebfluxessentials.repository.AnimeRepository;
-import br.cams7.tests.springwebfluxessentials.service.AnimeService;
 import br.cams7.tests.springwebfluxessentials.utils.AnimeCreator;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -19,10 +17,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -33,37 +32,38 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @ExtendWith(SpringExtension.class)
-@WebFluxTest
-@Import({AnimeService.class, CustomAttributes.class})
-// @SpringBootTest
-// @AutoConfigureWebTestClient
+// @WebFluxTest
+// @Import({AnimeService.class, CustomAttributes.class})
+@SpringBootTest
+@AutoConfigureWebTestClient
 public class AnimeControllerITTests {
 
-  @MockBean private AnimeRepository repositoryMock;
+  private static final String USER = "user";
+  private static final String ADMIN = "admin";
 
   @Autowired private WebTestClient testClient;
+
+  @MockBean private AnimeRepository animeRepository;
 
   private static final Anime createdAnime = AnimeCreator.createValidAnime();
   private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
   @BeforeAll
   public static void blockHoundSetup() {
-    BlockHound.install(
-        // builder -> builder.allowBlockingCallsInside("java.util.UUID", "randomUUID")
-        );
+    BlockHound.install();
   }
 
   @BeforeEach
   public void setUp() {
-    BDDMockito.when(repositoryMock.findAll())
+    BDDMockito.when(animeRepository.findAll())
         .thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
-    BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong()))
+    BDDMockito.when(animeRepository.findById(ArgumentMatchers.anyLong()))
         .thenReturn(Mono.just(createdAnime));
-    BDDMockito.when(repositoryMock.save(AnimeCreator.createAnimeToBeSaved()))
+    BDDMockito.when(animeRepository.save(AnimeCreator.createAnimeToBeSaved()))
         .thenReturn(Mono.just(createdAnime));
-    BDDMockito.when(repositoryMock.saveAll(ArgumentMatchers.anySet()))
+    BDDMockito.when(animeRepository.saveAll(ArgumentMatchers.anySet()))
         .thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
-    BDDMockito.when(repositoryMock.delete(ArgumentMatchers.any(Anime.class)))
+    BDDMockito.when(animeRepository.delete(ArgumentMatchers.any(Anime.class)))
         .thenReturn(Mono.empty());
   }
 
@@ -86,7 +86,9 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("listAll returns all animes when successfull")
+  @DisplayName(
+      "listAll returns all animes when user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void listAll_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
@@ -106,7 +108,9 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("listAll returns all animes when successfull")
+  @DisplayName(
+      "listAll returns all animes when user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void listAll_Flavor2_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
@@ -120,7 +124,8 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("findById returns an anime when successfull")
+  @DisplayName("findById returns an anime when user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void findById_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
@@ -136,7 +141,8 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("findById returns an anime when successfull")
+  @DisplayName("findById returns an anime when user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void findById_Flavor2_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
@@ -149,9 +155,11 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("findById returns error when empty is returned")
+  @DisplayName(
+      "findById returns error when empty is returned and user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void findById_ReturnsError_WhenEmptyIsReturned() {
-    BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
+    BDDMockito.when(animeRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .get()
         .uri("/animes/{id}", 1)
@@ -166,7 +174,8 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("save creates an anime when successfull")
+  @DisplayName("save creates an anime when user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
   public void save_CreatesAnAnime_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
@@ -182,7 +191,9 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("save returns error when name is empty")
+  @DisplayName(
+      "save returns error when name is empty and user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
   public void save_ReturnsError_WhenNameIsEmpty() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved().withName("");
     testClient
@@ -199,7 +210,8 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("saveBatch creates animes when successfull")
+  @DisplayName("saveBatch creates animes when user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
   public void saveBatch_CreatesAnimes_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
@@ -217,9 +229,11 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("saveBatch returns error when one of the animes contains null or empty name")
+  @DisplayName(
+      "saveBatch returns error when one of the animes contains null or empty name and user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
   public void saveBatch_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
-    BDDMockito.when(repositoryMock.saveAll(ArgumentMatchers.anySet()))
+    BDDMockito.when(animeRepository.saveAll(ArgumentMatchers.anySet()))
         .thenReturn(Flux.just(createdAnime, secoundCreatedAnime.withName("")));
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
@@ -238,15 +252,18 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("delete removes the anime when successfull")
+  @DisplayName("delete removes the anime when user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
   public void delete_RemovesTheAnime_WhenSuccessful() {
     testClient.delete().uri("/animes/{id}", 1).exchange().expectStatus().isNoContent();
   }
 
   @Test
-  @DisplayName("delete returns error when empty is returned")
+  @DisplayName(
+      "delete returns error when empty is returned and user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
   public void delete_ReturnsError_WhenEmptyIsReturned() {
-    BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
+    BDDMockito.when(animeRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .delete()
         .uri("/animes/{id}", 1)
@@ -259,11 +276,13 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("update saves updated anime when successfull")
+  @DisplayName(
+      "update saves updated anime when user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void update_SavesUpdatedAnime_WhenSuccessful() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
-    BDDMockito.when(repositoryMock.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));
+    BDDMockito.when(animeRepository.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));
     testClient
         .put()
         .uri("/animes/{id}", 1)
@@ -275,7 +294,9 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("update returns error when name is empty")
+  @DisplayName(
+      "update returns error when name is empty and  user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void update_ReturnsError_WhenNameIsEmpty() {
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName("");
     testClient
@@ -292,11 +313,13 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("update returns error when empty is returned")
+  @DisplayName(
+      "update returns error when empty is returned and  user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
   public void update_ReturnsError_WhenEmptyIsReturned() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
-    BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
+    BDDMockito.when(animeRepository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .put()
         .uri("/animes/{id}", 1)
