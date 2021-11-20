@@ -3,6 +3,7 @@ package br.cams7.tests.springwebfluxessentials.service;
 import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.repository.AnimeRepository;
 import br.cams7.tests.springwebfluxessentials.utils.AnimeCreator;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +34,8 @@ public class AnimeServiceTests {
 
   @Mock private AnimeRepository repository;
 
-  private static final Anime anime = AnimeCreator.createValidAnime();
+  private static final Anime createdAnime = AnimeCreator.createValidAnime();
+  private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
   @BeforeAll
   public static void blockHoundSetup() {
@@ -42,10 +44,13 @@ public class AnimeServiceTests {
 
   @BeforeEach
   public void setUp() {
-    BDDMockito.when(repository.findAll()).thenReturn(Flux.just(anime));
-    BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.just(anime));
+    BDDMockito.when(repository.findAll()).thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
+    BDDMockito.when(repository.findById(ArgumentMatchers.anyLong()))
+        .thenReturn(Mono.just(createdAnime));
     BDDMockito.when(repository.save(AnimeCreator.createAnimeToBeSaved()))
-        .thenReturn(Mono.just(anime));
+        .thenReturn(Mono.just(createdAnime));
+    BDDMockito.when(repository.saveAll(ArgumentMatchers.anySet()))
+        .thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
     BDDMockito.when(repository.delete(ArgumentMatchers.any(Anime.class))).thenReturn(Mono.empty());
   }
 
@@ -68,23 +73,27 @@ public class AnimeServiceTests {
   }
 
   @Test
-  @DisplayName("findAll returns a flux of anime when successfull")
-  public void findAll_ReturnFluxOfAnime_WhenSuccessful() {
-    StepVerifier.create(service.findAll()).expectSubscription().expectNext(anime).verifyComplete();
-  }
-
-  @Test
-  @DisplayName("findById returns a mono with anime when it exists")
-  public void findById_ReturnMonoWithAnime_WhenItExists() {
-    StepVerifier.create(service.findById(1L))
+  @DisplayName("findAll returns all animes when successfull")
+  public void findAll_ReturnsAllAnimes_WhenSuccessful() {
+    StepVerifier.create(service.findAll())
         .expectSubscription()
-        .expectNext(anime)
+        .expectNext(createdAnime)
+        .expectNext(secoundCreatedAnime)
         .verifyComplete();
   }
 
   @Test
-  @DisplayName("findById returns error when mono empty is returned")
-  public void findById_ReturnError_WhenEmptyMonoIsReturned() {
+  @DisplayName("findById returns an anime when successfull")
+  public void findById_ReturnsAnAnime_WhenSuccessful() {
+    StepVerifier.create(service.findById(1L))
+        .expectSubscription()
+        .expectNext(createdAnime)
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("findById returns error when empty is returned")
+  public void findById_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     StepVerifier.create(service.findById(1L))
         .expectSubscription()
@@ -94,23 +103,47 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("save creates an anime when successfull")
-  public void save_CreateAnAnime_WhenSuccessful() {
+  public void save_CreatesAnAnime_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     StepVerifier.create(service.save(animeToBeSaved))
         .expectSubscription()
-        .expectNext(anime)
+        .expectNext(createdAnime)
         .verifyComplete();
   }
 
   @Test
+  @DisplayName("saveAll creates animes when successfull")
+  public void saveAll_CreatesAnimes_WhenSuccessful() {
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    StepVerifier.create(
+            service.saveAll(Set.of(animeToBeSaved, animeToBeSaved.withName("Death Note"))))
+        .expectSubscription()
+        .expectNext(createdAnime, secoundCreatedAnime)
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("saveAll returns error when one of the animes contains null or empty name")
+  public void saveAll_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
+    BDDMockito.when(repository.saveAll(ArgumentMatchers.anySet()))
+        .thenReturn(Flux.just(createdAnime, secoundCreatedAnime.withName("")));
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    StepVerifier.create(service.saveAll(Set.of(animeToBeSaved, animeToBeSaved.withName(""))))
+        .expectSubscription()
+        .expectNext(createdAnime)
+        .expectError(ResponseStatusException.class)
+        .verify();
+  }
+
+  @Test
   @DisplayName("delete removes the anime when successfull")
-  public void delete_RemoveTheAnime_WhenSuccessful() {
+  public void delete_RemovesTheAnime_WhenSuccessful() {
     StepVerifier.create(service.delete(1L)).expectSubscription().verifyComplete();
   }
 
   @Test
-  @DisplayName("delete returns error when mono empty is returned")
-  public void delete_ReturnError_WhenEmptyMonoIsReturned() {
+  @DisplayName("delete returns error when empty is returned")
+  public void delete_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     StepVerifier.create(service.delete(1L))
         .expectSubscription()
@@ -119,17 +152,19 @@ public class AnimeServiceTests {
   }
 
   @Test
-  @DisplayName("update save updated anime when successfull")
-  public void update_SaveUpdatedAnime_WhenSuccessful() {
-    BDDMockito.when(repository.save(anime)).thenReturn(Mono.just(anime));
-    StepVerifier.create(service.update(anime)).expectSubscription().verifyComplete();
+  @DisplayName("update saves updated anime when successfull")
+  public void update_SavesUpdatedAnime_WhenSuccessful() {
+    var updatedAnime = AnimeCreator.createValidUpdatedAnime();
+    BDDMockito.when(repository.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));
+    StepVerifier.create(service.update(updatedAnime)).expectSubscription().verifyComplete();
   }
 
   @Test
-  @DisplayName("update returns error when mono empty is returned")
-  public void update_ReturnError_WhenEmptyMonoIsReturned() {
+  @DisplayName("update returns error when empty is returned")
+  public void update_ReturnsError_WhenEmptyIsReturned() {
+    var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
-    StepVerifier.create(service.update(anime))
+    StepVerifier.create(service.update(updatedAnime))
         .expectSubscription()
         .expectError(ResponseStatusException.class)
         .verify();

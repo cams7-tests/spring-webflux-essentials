@@ -5,6 +5,7 @@ import br.cams7.tests.springwebfluxessentials.exception.CustomAttributes;
 import br.cams7.tests.springwebfluxessentials.repository.AnimeRepository;
 import br.cams7.tests.springwebfluxessentials.service.AnimeService;
 import br.cams7.tests.springwebfluxessentials.utils.AnimeCreator;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
@@ -34,26 +35,34 @@ import reactor.core.scheduler.Schedulers;
 @ExtendWith(SpringExtension.class)
 @WebFluxTest
 @Import({AnimeService.class, CustomAttributes.class})
+// @SpringBootTest
+// @AutoConfigureWebTestClient
 public class AnimeControllerITTests {
 
   @MockBean private AnimeRepository repositoryMock;
 
   @Autowired private WebTestClient testClient;
 
-  private static final Anime anime = AnimeCreator.createValidAnime();
+  private static final Anime createdAnime = AnimeCreator.createValidAnime();
+  private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
   @BeforeAll
   public static void blockHoundSetup() {
-    BlockHound.install();
+    BlockHound.install(
+        // builder -> builder.allowBlockingCallsInside("java.util.UUID", "randomUUID")
+        );
   }
 
   @BeforeEach
   public void setUp() {
-    BDDMockito.when(repositoryMock.findAll()).thenReturn(Flux.just(anime));
+    BDDMockito.when(repositoryMock.findAll())
+        .thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(Mono.just(anime));
+        .thenReturn(Mono.just(createdAnime));
     BDDMockito.when(repositoryMock.save(AnimeCreator.createAnimeToBeSaved()))
-        .thenReturn(Mono.just(anime));
+        .thenReturn(Mono.just(createdAnime));
+    BDDMockito.when(repositoryMock.saveAll(ArgumentMatchers.anySet()))
+        .thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
     BDDMockito.when(repositoryMock.delete(ArgumentMatchers.any(Anime.class)))
         .thenReturn(Mono.empty());
   }
@@ -77,8 +86,8 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("listAll returns a flux of anime when successfull")
-  public void listAll_ReturnFluxOfAnime_WhenSuccessful() {
+  @DisplayName("listAll returns all animes when successfull")
+  public void listAll_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes")
@@ -87,14 +96,18 @@ public class AnimeControllerITTests {
         .is2xxSuccessful()
         .expectBody()
         .jsonPath("$.[0].id")
-        .isEqualTo(anime.getId())
+        .isEqualTo(createdAnime.getId())
         .jsonPath("$.[0].name")
-        .isEqualTo(anime.getName());
+        .isEqualTo(createdAnime.getName())
+        .jsonPath("$.[1].id")
+        .isEqualTo(secoundCreatedAnime.getId())
+        .jsonPath("$.[1].name")
+        .isEqualTo(secoundCreatedAnime.getName());
   }
 
   @Test
-  @DisplayName("listAll returns a flux of anime when successfull")
-  public void listAll_Flavor2_ReturnFluxOfAnime_WhenSuccessful() {
+  @DisplayName("listAll returns all animes when successfull")
+  public void listAll_Flavor2_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes")
@@ -102,13 +115,13 @@ public class AnimeControllerITTests {
         .expectStatus()
         .isOk()
         .expectBodyList(Anime.class)
-        .hasSize(1)
-        .contains(anime);
+        .hasSize(2)
+        .contains(createdAnime, secoundCreatedAnime);
   }
 
   @Test
-  @DisplayName("findById returns a mono with anime when it exists")
-  public void findById_ReturnMonoWithAnime_WhenItExists() {
+  @DisplayName("findById returns an anime when successfull")
+  public void findById_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes/{id}", 1)
@@ -117,14 +130,14 @@ public class AnimeControllerITTests {
         .is2xxSuccessful()
         .expectBody()
         .jsonPath("$.id")
-        .isEqualTo(anime.getId())
+        .isEqualTo(createdAnime.getId())
         .jsonPath("$.name")
-        .isEqualTo(anime.getName());
+        .isEqualTo(createdAnime.getName());
   }
 
   @Test
-  @DisplayName("findById returns a mono with anime when it exists")
-  public void findById_Flavor2_ReturnMonoWithAnime_WhenItExists() {
+  @DisplayName("findById returns an anime when successfull")
+  public void findById_Flavor2_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes/{id}", 1)
@@ -132,12 +145,12 @@ public class AnimeControllerITTests {
         .expectStatus()
         .isOk()
         .expectBody(Anime.class)
-        .isEqualTo(anime);
+        .isEqualTo(createdAnime);
   }
 
   @Test
-  @DisplayName("findById returns error when mono empty is returned")
-  public void findById_ReturnError_WhenEmptyMonoIsReturned() {
+  @DisplayName("findById returns error when empty is returned")
+  public void findById_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .get()
@@ -154,7 +167,7 @@ public class AnimeControllerITTests {
 
   @Test
   @DisplayName("save creates an anime when successfull")
-  public void save_CreateAnAnime_WhenSuccessful() {
+  public void save_CreatesAnAnime_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
         .post()
@@ -165,12 +178,12 @@ public class AnimeControllerITTests {
         .expectStatus()
         .isCreated()
         .expectBody(Anime.class)
-        .isEqualTo(anime);
+        .isEqualTo(createdAnime);
   }
 
   @Test
   @DisplayName("save returns error when name is empty")
-  public void save_ReturnError_WhenNameIsEmpty() {
+  public void save_ReturnsError_WhenNameIsEmpty() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved().withName("");
     testClient
         .post()
@@ -186,14 +199,53 @@ public class AnimeControllerITTests {
   }
 
   @Test
+  @DisplayName("saveBatch creates animes when successfull")
+  public void saveBatch_CreatesAnimes_WhenSuccessful() {
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    testClient
+        .post()
+        .uri("/animes/batch")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(
+            BodyInserters.fromValue(Set.of(animeToBeSaved, animeToBeSaved.withName("Death Note"))))
+        .exchange()
+        .expectStatus()
+        .isCreated()
+        .expectBodyList(Anime.class)
+        .hasSize(2)
+        .contains(createdAnime, secoundCreatedAnime);
+  }
+
+  @Test
+  @DisplayName("saveBatch returns error when one of the animes contains null or empty name")
+  public void saveBatch_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
+    BDDMockito.when(repositoryMock.saveAll(ArgumentMatchers.anySet()))
+        .thenReturn(Flux.just(createdAnime, secoundCreatedAnime.withName("")));
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    testClient
+        .post()
+        .uri("/animes/batch")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(Set.of(animeToBeSaved, animeToBeSaved.withName(""))))
+        .exchange()
+        .expectStatus()
+        .isBadRequest()
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo(400)
+        .jsonPath("$.message")
+        .isEqualTo("400 BAD_REQUEST \"Invalid name\"");
+  }
+
+  @Test
   @DisplayName("delete removes the anime when successfull")
-  public void delete_RemoveTheAnime_WhenSuccessful() {
+  public void delete_RemovesTheAnime_WhenSuccessful() {
     testClient.delete().uri("/animes/{id}", 1).exchange().expectStatus().isNoContent();
   }
 
   @Test
-  @DisplayName("delete returns error when mono empty is returned")
-  public void delete_ReturnError_WhenEmptyMonoIsReturned() {
+  @DisplayName("delete returns error when empty is returned")
+  public void delete_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .delete()
@@ -207,28 +259,49 @@ public class AnimeControllerITTests {
   }
 
   @Test
-  @DisplayName("update save updated anime when successfull")
-  public void update_SaveUpdatedAnime_WhenSuccessful() {
-    BDDMockito.when(repositoryMock.save(anime)).thenReturn(Mono.just(anime));
+  @DisplayName("update saves updated anime when successfull")
+  public void update_SavesUpdatedAnime_WhenSuccessful() {
+    var updatedAnime = AnimeCreator.createValidUpdatedAnime();
+    var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
+    BDDMockito.when(repositoryMock.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));
     testClient
         .put()
         .uri("/animes/{id}", 1)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(anime))
+        .body(BodyInserters.fromValue(animeToBeUpdated))
         .exchange()
         .expectStatus()
         .isNoContent();
   }
 
   @Test
-  @DisplayName("update returns error when mono empty is returned")
-  public void update_ReturnError_WhenEmptyMonoIsReturned() {
+  @DisplayName("update returns error when name is empty")
+  public void update_ReturnsError_WhenNameIsEmpty() {
+    var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName("");
+    testClient
+        .put()
+        .uri("/animes/{id}", 1)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(animeToBeUpdated))
+        .exchange()
+        .expectStatus()
+        .isBadRequest()
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo(400);
+  }
+
+  @Test
+  @DisplayName("update returns error when empty is returned")
+  public void update_ReturnsError_WhenEmptyIsReturned() {
+    var updatedAnime = AnimeCreator.createValidUpdatedAnime();
+    var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .put()
         .uri("/animes/{id}", 1)
         .contentType(MediaType.APPLICATION_JSON)
-        .body(BodyInserters.fromValue(anime))
+        .body(BodyInserters.fromValue(animeToBeUpdated))
         .exchange()
         .expectStatus()
         .isNotFound()

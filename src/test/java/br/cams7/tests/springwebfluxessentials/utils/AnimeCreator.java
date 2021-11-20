@@ -4,7 +4,7 @@ import br.cams7.tests.springwebfluxessentials.domain.Anime;
 
 public class AnimeCreator {
   public static Anime createAnimeToBeSaved() {
-    return Anime.builder().name("ONE PIECE").build();
+    return Anime.builder().name("Naruto").build();
   }
 
   public static Anime createValidAnime() {
