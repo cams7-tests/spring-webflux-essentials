@@ -4,12 +4,6 @@ import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.service.AnimeService;
 import br.cams7.tests.springwebfluxessentials.utils.AnimeCreator;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,11 +13,8 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import reactor.blockhound.BlockHound;
-import reactor.blockhound.BlockingOperationError;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
@@ -35,10 +26,10 @@ public class AnimeControllerTests {
   private static final Anime createdAnime = AnimeCreator.createValidAnime();
   private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
-  @BeforeAll
-  public static void blockHoundSetup() {
-    BlockHound.install();
-  }
+  // @BeforeAll
+  // public static void blockHoundSetup() {
+  //  BlockHound.install();
+  // }
 
   @BeforeEach
   public void setUp() {
@@ -54,7 +45,7 @@ public class AnimeControllerTests {
         .thenReturn(Mono.empty());
   }
 
-  @Test
+  /*@Test
   public void blockHoundWorks() {
     var task =
         new FutureTask<>(
@@ -70,7 +61,7 @@ public class AnimeControllerTests {
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
     }
-  }
+  }*/
 
   @Test
   @DisplayName("listAll returns all animes when successfull")
