@@ -2,6 +2,7 @@ package br.cams7.tests.springwebfluxessentials.controller;
 
 import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.service.AnimeService;
+import java.util.Set;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,12 @@ public class AnimeController {
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Anime> save(@Valid @RequestBody Anime anime) {
     return service.save(anime);
+  }
+
+  @PostMapping("batch")
+  @ResponseStatus(HttpStatus.CREATED)
+  public Flux<Anime> saveBatch(@RequestBody Set<Anime> animes) {
+    return service.saveAll(animes);
   }
 
   @PutMapping(path = "{id}")
