@@ -124,6 +124,12 @@ public class AnimeControllerITTests {
   }
 
   @Test
+  @DisplayName("listAll returns unauthorized when user isn't authenticated")
+  public void listAll_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+    testClient.get().uri("/animes").exchange().expectStatus().isUnauthorized();
+  }
+
+  @Test
   @DisplayName("findById returns an anime when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
   public void findById_ReturnsAnAnime_WhenSuccessful() {
@@ -174,6 +180,12 @@ public class AnimeControllerITTests {
   }
 
   @Test
+  @DisplayName("findById returns unauthorized when user isn't authenticated")
+  public void findById_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+    testClient.get().uri("/animes/{id}", 1).exchange().expectStatus().isUnauthorized();
+  }
+
+  @Test
   @DisplayName("save creates an anime when user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
   public void save_CreatesAnAnime_WhenSuccessful() {
@@ -207,6 +219,36 @@ public class AnimeControllerITTests {
         .expectBody()
         .jsonPath("$.status")
         .isEqualTo(400);
+  }
+
+  @Test
+  @DisplayName(
+      "save returns forbidden when user is successfull authenticated and doesn't have role ADMIN")
+  @WithUserDetails(USER)
+  public void save_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    testClient
+        .post()
+        .uri("/animes")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(animeToBeSaved))
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  @DisplayName("save returns unauthorized when user isn't authenticated")
+  public void save_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    testClient
+        .post()
+        .uri("/animes")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(animeToBeSaved))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
   }
 
   @Test
@@ -252,6 +294,36 @@ public class AnimeControllerITTests {
   }
 
   @Test
+  @DisplayName(
+      "saveBatch returns forbidden when user is successfull authenticated and doesn't have role ADMIN")
+  @WithUserDetails(USER)
+  public void saveBatch_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    testClient
+        .post()
+        .uri("/animes/batch")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(Set.of(animeToBeSaved, animeToBeSaved.withName(""))))
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  @DisplayName("saveBatch returns unauthorized when user isn't authenticated")
+  public void saveBatch_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
+    testClient
+        .post()
+        .uri("/animes/batch")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(Set.of(animeToBeSaved, animeToBeSaved.withName(""))))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
+  }
+
+  @Test
   @DisplayName("delete removes the anime when user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
   public void delete_RemovesTheAnime_WhenSuccessful() {
@@ -273,6 +345,20 @@ public class AnimeControllerITTests {
         .expectBody()
         .jsonPath("$.status")
         .isEqualTo(404);
+  }
+
+  @Test
+  @DisplayName(
+      "delete returns forbidden when user is successfull authenticated and doesn't have role ADMIN")
+  @WithUserDetails(USER)
+  public void delete_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
+    testClient.delete().uri("/animes/{id}", 1).exchange().expectStatus().isForbidden();
+  }
+
+  @Test
+  @DisplayName("delete returns unauthorized when user isn't authenticated")
+  public void delete_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+    testClient.delete().uri("/animes/{id}", 1).exchange().expectStatus().isUnauthorized();
   }
 
   @Test
@@ -331,5 +417,21 @@ public class AnimeControllerITTests {
         .expectBody()
         .jsonPath("$.status")
         .isEqualTo(404);
+  }
+
+  @Test
+  @DisplayName("update returns unauthorized when user isn't authenticated")
+  public void update_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+    var updatedAnime = AnimeCreator.createValidUpdatedAnime();
+    var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
+    BDDMockito.when(animeRepository.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));
+    testClient
+        .put()
+        .uri("/animes/{id}", 1)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(animeToBeUpdated))
+        .exchange()
+        .expectStatus()
+        .isUnauthorized();
   }
 }
