@@ -14,7 +14,7 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @Builder
 @With
-@Table("anime")
+@Table("anime.anime")
 public class Anime {
   @Id private Long id;
 
