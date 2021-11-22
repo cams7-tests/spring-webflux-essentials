@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
@@ -14,9 +15,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @Builder
 @With
-@Table("anime.anime")
+@Table("tb_anime")
 public class Anime {
-  @Id private Long id;
+  @Id
+  @Column("id_anime")
+  private Long id;
 
   @NotBlank(message = "The name of this anime cannot be empty")
   private String name;

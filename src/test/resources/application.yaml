@@ -1,13 +1,8 @@
-#spring:
-#  r2dbc:
-#    url: r2dbc:h2:mem:///~/db/testdb    
-#    username: sa
-#    password:
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:15432/spring_webflux_essentials?schema=anime
-    username: spring_webflux_essentials
-    password: abc12345
+    url: r2dbc:h2:mem:///spring-webflux-essentials?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
 
 logging:
   level:

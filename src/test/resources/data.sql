@@ -1,0 +1,20 @@
+INSERT INTO tb_anime(name) VALUES('Beastars');
+INSERT INTO tb_anime(name) VALUES('Eden');
+INSERT INTO tb_anime(name) VALUES('Sword Art Online');
+INSERT INTO tb_anime(name) VALUES('Neon Genesis Evangelion');
+INSERT INTO tb_anime(name) VALUES('Aggretsuko');
+INSERT INTO tb_anime(name) VALUES('Fate/Apocrypha');
+INSERT INTO tb_anime(name) VALUES('Fate/Extra Last Encore');
+INSERT INTO tb_anime(name) VALUES('Bayonetta: Destino Sangrento');
+INSERT INTO tb_anime(name) VALUES('Madoka Magica');
+INSERT INTO tb_anime(name) VALUES('Memórias de Idhún');
+INSERT INTO tb_anime(name) VALUES('Last Hope');
+INSERT INTO tb_anime(name) VALUES('Kengan Ashura');
+INSERT INTO tb_anime(name) VALUES('The Daily Life of the Immortal King');
+INSERT INTO tb_anime(name) VALUES('Hunter X Hunter: A Última Missão');
+INSERT INTO tb_anime(name) VALUES('Kakegurui');
+INSERT INTO tb_anime(name) VALUES('The Seven Deadly Sins');
+INSERT INTO tb_anime(name) VALUES('Children of the Whales');
+--Password: abc12345
+INSERT INTO tb_user(name, username, password, authorities) VALUES('Some User', 'user', '{bcrypt}$2a$10$8RRftD6fhCnp0Psyl.8VGeRb6wEOuUX8bqsVqnWzTZXw2x.C0cepO', 'ROLE_USER');
+INSERT INTO tb_user(name, username, password, authorities) VALUES('Administrator', 'admin', '{bcrypt}$2a$10$NOcV6G.vaf5cPc7ZLSoSfO495Z/mWUibm11hpFkS6lr2fP48.e1.u', 'ROLE_USER,ROLE_ADMIN');

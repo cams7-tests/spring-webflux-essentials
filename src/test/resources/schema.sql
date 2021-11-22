@@ -1,0 +1,11 @@
+CREATE TABLE tb_anime ( 
+    id_anime IDENTITY NOT NULL PRIMARY KEY,
+    name VARCHAR NOT NULL
+);
+CREATE TABLE tb_user ( 
+    id_user IDENTITY NOT NULL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+	username VARCHAR NOT NULL,
+	password VARCHAR NOT NULL,
+	authorities VARCHAR NOT NULL
+);
