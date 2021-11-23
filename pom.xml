@@ -26,11 +26,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.r2dbc</groupId>
-			<artifactId>r2dbc-postgresql</artifactId>
-		</dependency>
+		</dependency>		
 
 		<dependency>
 			<groupId>io.r2dbc</groupId>
@@ -99,7 +95,22 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -112,6 +123,71 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix />
+						</manifest>
+						<manifestEntries>
+							<url>${project.url}</url>
+							<Implementation-Build>${buildNumber}</Implementation-Build>
+							<Implementation-Title>${project.name}</Implementation-Title>
+							<Implementation-Vendor>N/A</Implementation-Vendor>
+							<Implementation-Version>${project.version}</Implementation-Version>
+							<Built-By>${user.name}</Built-By>
+							<Built-OS>${os.name}</Built-OS>
+							<Build-Date>${timestamp}</Build-Date>
+							<SCM>${buildNumber}</SCM>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<os>
+					<family>Linux</family>
+				</os>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>dev</name>
+				</property>
+			</activation>
+			<properties>
+				<spring.profiles.active>dev</spring.profiles.active>
+				<spring.datasource.url>${R2DBC_DATABASE_URL}</spring.datasource.url>
+				<spring.datasource.username>${R2DBC_DATABASE_USERNAME}</spring.datasource.username>
+				<spring.datasource.password>${R2DBC_DATABASE_PASSWORD}</spring.datasource.password>
+				<spring.logging>${LOGGING}</spring.logging>				
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>io.r2dbc</groupId>
+					<artifactId>r2dbc-postgresql</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>test</id>
+			<activation>
+				<os>
+					<family>Linux</family>
+				</os>
+				<property>
+					<name>test</name>
+				</property>
+			</activation>
+			<properties>
+				<spring.profiles.active>test</spring.profiles.active>				
+			</properties>
+		</profile>		
+	</profiles>
 </project>

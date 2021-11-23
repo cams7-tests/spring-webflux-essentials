@@ -1,14 +1,12 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:15432/spring_webflux_essentials
-    username: spring_webflux_essentials
-    password: abc12345
+    url: @spring.datasource.url@
+    username: @spring.datasource.username@
+    password: @spring.datasource.password@
 logging:
   level:
     org:
-      springframework: DEBUG
-#        data:
-#          r2dbc: DEBUG
+      springframework: @spring.logging@
 server:
   error:
     include-stacktrace: on-param
