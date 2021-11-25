@@ -24,8 +24,8 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '11'
-#        distribution: 'adopt'
-#        cache: maven
+        distribution: 'adopt'
+        cache: maven
         
     - id: cache-sonarcloud-packages
       name: Cache SonarCloud packages
@@ -35,13 +35,13 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
         
-    - id: cache-maven-packages
-      name: Cache Maven packages
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+ #   - id: cache-maven-packages
+ #     name: Cache Maven packages
+ #     uses: actions/cache@v1
+ #     with:
+ #       path: ~/.m2
+ #       key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+ #       restore-keys: ${{ runner.os }}-m2
         
     - id: build-and-analyze
       name: Build and analyze
