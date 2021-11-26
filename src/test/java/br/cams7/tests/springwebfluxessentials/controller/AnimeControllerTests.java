@@ -1,21 +1,31 @@
 package br.cams7.tests.springwebfluxessentials.controller;
 
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.DELETED_ANIME_ID;
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.FIRST_ANIME_ID;
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.SECOUND_ANIME_ID;
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.UPDATED_ANIME_ID;
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.getAnimeToBeSaved;
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.getFirstAnime;
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.getSecoundAnime;
+import static br.cams7.tests.springwebfluxessentials.utils.AnimeCreator.getUpdatedAnime;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.BDDMockito.when;
+import static reactor.test.StepVerifier.create;
+
 import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.service.AnimeService;
-import br.cams7.tests.springwebfluxessentials.utils.AnimeCreator;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
 class AnimeControllerTests {
@@ -23,75 +33,77 @@ class AnimeControllerTests {
 
   @Mock private AnimeService service;
 
-  private static final Anime createdAnime = AnimeCreator.createValidAnime();
-  private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
+  private static final Anime ANIME_TO_BE_SAVED = getAnimeToBeSaved();
+  private static final Anime FIRST_ANIME = getFirstAnime();
+  private static final Anime SECOUND_ANIME = getSecoundAnime();
+  private static final Anime UPDATED_ANIME = getUpdatedAnime();
 
   @BeforeEach
   void setUp() {
-    BDDMockito.when(service.findAll()).thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
-    BDDMockito.when(service.findById(ArgumentMatchers.anyLong()))
-        .thenReturn(Mono.just(createdAnime));
-    BDDMockito.when(service.save(AnimeCreator.createAnimeToBeSaved()))
-        .thenReturn(Mono.just(createdAnime));
-    BDDMockito.when(service.saveAll(ArgumentMatchers.anySet()))
-        .thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
-    BDDMockito.when(service.delete(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
-    BDDMockito.when(service.update(AnimeCreator.createValidUpdatedAnime()))
-        .thenReturn(Mono.empty());
+    when(service.findAll()).thenReturn(Flux.just(FIRST_ANIME, SECOUND_ANIME));
+    when(service.findById(anyLong())).thenReturn(Mono.just(FIRST_ANIME));
+    when(service.save(any(Anime.class)))
+        .thenReturn(Mono.just(ANIME_TO_BE_SAVED.withId(FIRST_ANIME_ID)));
+    when(service.saveAll(anySet()))
+        .thenReturn(
+            Flux.just(
+                ANIME_TO_BE_SAVED.withId(FIRST_ANIME_ID),
+                ANIME_TO_BE_SAVED.withId(SECOUND_ANIME_ID).withName("Death Note")));
+    when(service.delete(anyLong())).thenReturn(Mono.empty());
+    when(service.update(any(Anime.class))).thenReturn(Mono.empty());
   }
 
   @Test
   @DisplayName("listAll returns all animes when successfull")
   void listAll_ReturnsAllAnimes_WhenSuccessful() {
-    StepVerifier.create(controller.listAll())
+    create(controller.listAll())
         .expectSubscription()
-        .expectNext(createdAnime)
-        .expectNext(secoundCreatedAnime)
+        .expectNext(FIRST_ANIME)
+        .expectNext(SECOUND_ANIME)
         .verifyComplete();
   }
 
   @Test
   @DisplayName("findById returns an anime when successfull")
   void findById_ReturnsAnAnime_WhenSuccessful() {
-    StepVerifier.create(controller.findById(1L))
+    create(controller.findById(FIRST_ANIME_ID))
         .expectSubscription()
-        .expectNext(createdAnime)
+        .expectNext(FIRST_ANIME)
         .verifyComplete();
   }
 
   @Test
   @DisplayName("save creates an anime when successfull")
   void save_CreatesAnAnime_WhenSuccessful() {
-    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
-    StepVerifier.create(controller.save(animeToBeSaved))
+    create(controller.save(ANIME_TO_BE_SAVED))
         .expectSubscription()
-        .expectNext(createdAnime)
+        .expectNext(ANIME_TO_BE_SAVED.withId(FIRST_ANIME_ID))
         .verifyComplete();
   }
 
   @Test
   @DisplayName("saveBatch creates animes when successfull")
   void saveBatch_CreatesAnimes_WhenSuccessful() {
-    var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
-    StepVerifier.create(
-            controller.saveBatch(Set.of(animeToBeSaved, animeToBeSaved.withName("Death Note"))))
+    create(
+            controller.saveBatch(
+                Set.of(ANIME_TO_BE_SAVED, ANIME_TO_BE_SAVED.withName("Death Note"))))
         .expectSubscription()
-        .expectNext(createdAnime, secoundCreatedAnime)
+        .expectNext(
+            ANIME_TO_BE_SAVED.withId(FIRST_ANIME_ID),
+            ANIME_TO_BE_SAVED.withId(SECOUND_ANIME_ID).withName("Death Note"))
         .verifyComplete();
   }
 
   @Test
   @DisplayName("delete removes the anime when successfull")
   void delete_RemovesTheAnime_WhenSuccessful() {
-    StepVerifier.create(controller.delete(1L)).expectSubscription().verifyComplete();
+    create(controller.delete(DELETED_ANIME_ID)).expectSubscription().verifyComplete();
   }
 
   @Test
   @DisplayName("update saves updated anime when successfull")
   void update_SavesUpdatedAnime_WhenSuccessful() {
-    var updatedAnime = AnimeCreator.createValidUpdatedAnime();
-    var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
-    StepVerifier.create(controller.update(1L, animeToBeUpdated))
+    create(controller.update(UPDATED_ANIME_ID, UPDATED_ANIME))
         .expectSubscription()
         .verifyComplete();
   }

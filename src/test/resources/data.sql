@@ -1,5 +1,5 @@
-INSERT INTO tb_anime(name) VALUES('Beastars');
-INSERT INTO tb_anime(name) VALUES('Eden');
+INSERT INTO tb_anime(name) VALUES('Naruto');
+INSERT INTO tb_anime(name) VALUES('One Piece');
 INSERT INTO tb_anime(name) VALUES('Sword Art Online');
 INSERT INTO tb_anime(name) VALUES('Neon Genesis Evangelion');
 INSERT INTO tb_anime(name) VALUES('Aggretsuko');
