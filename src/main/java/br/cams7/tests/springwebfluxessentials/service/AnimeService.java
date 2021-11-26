@@ -18,11 +18,11 @@ public class AnimeService {
   private final AnimeRepository repository;
 
   public Flux<Anime> findAll() {
-    return repository.findAll(); // .log();
+    return repository.findAll();
   }
 
   public Mono<Anime> findById(Long id) {
-    return repository.findById(id).switchIfEmpty(monoResponseStatusNotFoundException()); // .log();
+    return repository.findById(id).switchIfEmpty(monoResponseStatusNotFoundException());
   }
 
   public Mono<Anime> save(Anime anime) {
