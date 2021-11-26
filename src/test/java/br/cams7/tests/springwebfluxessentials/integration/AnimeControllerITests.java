@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
-class AnimeControllerITTests {
+class AnimeControllerITests {
 
   private static final String USER = "user";
   private static final String ADMIN = "admin";
