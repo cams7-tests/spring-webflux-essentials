@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono;
 // @Import({AnimeService.class, CustomAttributes.class})
 @SpringBootTest
 @AutoConfigureWebTestClient
-public class AnimeControllerITTests {
+class AnimeControllerITTests {
 
   private static final String USER = "user";
   private static final String ADMIN = "admin";
@@ -40,12 +40,12 @@ public class AnimeControllerITTests {
   private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
   // @BeforeAll
-  // public static void blockHoundSetup() {
+  // static void blockHoundSetup() {
   //  BlockHound.install();
   // }
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     BDDMockito.when(repositoryMock.findAll())
         .thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong()))
@@ -59,7 +59,7 @@ public class AnimeControllerITTests {
   }
 
   /*@Test
-  public void blockHoundWorks() {
+  void blockHoundWorks() {
     var task =
         new FutureTask<>(
             () -> {
@@ -80,7 +80,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "listAll returns all animes when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void listAll_ReturnsAllAnimes_WhenSuccessful() {
+  void listAll_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes")
@@ -102,7 +102,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "listAll returns all animes when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void listAll_Flavor2_ReturnsAllAnimes_WhenSuccessful() {
+  void listAll_Flavor2_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes")
@@ -116,14 +116,14 @@ public class AnimeControllerITTests {
 
   @Test
   @DisplayName("listAll returns unauthorized when user isn't authenticated")
-  public void listAll_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+  void listAll_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
     testClient.get().uri("/animes").exchange().expectStatus().isUnauthorized();
   }
 
   @Test
   @DisplayName("findById returns an anime when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void findById_ReturnsAnAnime_WhenSuccessful() {
+  void findById_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes/{id}", 1)
@@ -140,7 +140,7 @@ public class AnimeControllerITTests {
   @Test
   @DisplayName("findById returns an anime when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void findById_Flavor2_ReturnsAnAnime_WhenSuccessful() {
+  void findById_Flavor2_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes/{id}", 1)
@@ -155,7 +155,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "findById returns error when empty is returned and user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void findById_ReturnsError_WhenEmptyIsReturned() {
+  void findById_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .get()
@@ -172,14 +172,14 @@ public class AnimeControllerITTests {
 
   @Test
   @DisplayName("findById returns unauthorized when user isn't authenticated")
-  public void findById_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+  void findById_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
     testClient.get().uri("/animes/{id}", 1).exchange().expectStatus().isUnauthorized();
   }
 
   @Test
   @DisplayName("save creates an anime when user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
-  public void save_CreatesAnAnime_WhenSuccessful() {
+  void save_CreatesAnAnime_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
         .post()
@@ -197,7 +197,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "save returns error when name is empty and user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
-  public void save_ReturnsError_WhenNameIsEmpty() {
+  void save_ReturnsError_WhenNameIsEmpty() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved().withName("");
     testClient
         .post()
@@ -216,7 +216,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "save returns forbidden when user is successfull authenticated and doesn't have role ADMIN")
   @WithUserDetails(USER)
-  public void save_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
+  void save_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
         .post()
@@ -230,7 +230,7 @@ public class AnimeControllerITTests {
 
   @Test
   @DisplayName("save returns unauthorized when user isn't authenticated")
-  public void save_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+  void save_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
         .post()
@@ -245,7 +245,7 @@ public class AnimeControllerITTests {
   @Test
   @DisplayName("saveBatch creates animes when user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
-  public void saveBatch_CreatesAnimes_WhenSuccessful() {
+  void saveBatch_CreatesAnimes_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
         .post()
@@ -265,7 +265,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "saveBatch returns error when one of the animes contains null or empty name and user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
-  public void saveBatch_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
+  void saveBatch_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
     BDDMockito.when(repositoryMock.saveAll(ArgumentMatchers.anySet()))
         .thenReturn(Flux.just(createdAnime, secoundCreatedAnime.withName("")));
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
@@ -288,7 +288,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "saveBatch returns forbidden when user is successfull authenticated and doesn't have role ADMIN")
   @WithUserDetails(USER)
-  public void saveBatch_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
+  void saveBatch_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
         .post()
@@ -302,7 +302,7 @@ public class AnimeControllerITTests {
 
   @Test
   @DisplayName("saveBatch returns unauthorized when user isn't authenticated")
-  public void saveBatch_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+  void saveBatch_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     testClient
         .post()
@@ -317,7 +317,7 @@ public class AnimeControllerITTests {
   @Test
   @DisplayName("delete removes the anime when user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
-  public void delete_RemovesTheAnime_WhenSuccessful() {
+  void delete_RemovesTheAnime_WhenSuccessful() {
     testClient.delete().uri("/animes/{id}", 1).exchange().expectStatus().isNoContent();
   }
 
@@ -325,7 +325,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "delete returns error when empty is returned and user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
-  public void delete_ReturnsError_WhenEmptyIsReturned() {
+  void delete_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     testClient
         .delete()
@@ -342,13 +342,13 @@ public class AnimeControllerITTests {
   @DisplayName(
       "delete returns forbidden when user is successfull authenticated and doesn't have role ADMIN")
   @WithUserDetails(USER)
-  public void delete_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
+  void delete_ReturnsForbidden_WhenUserDoesNotHaveRoleADMIN() {
     testClient.delete().uri("/animes/{id}", 1).exchange().expectStatus().isForbidden();
   }
 
   @Test
   @DisplayName("delete returns unauthorized when user isn't authenticated")
-  public void delete_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+  void delete_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
     testClient.delete().uri("/animes/{id}", 1).exchange().expectStatus().isUnauthorized();
   }
 
@@ -356,7 +356,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "update saves updated anime when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void update_SavesUpdatedAnime_WhenSuccessful() {
+  void update_SavesUpdatedAnime_WhenSuccessful() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
     BDDMockito.when(repositoryMock.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));
@@ -374,7 +374,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "update returns error when name is empty and  user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void update_ReturnsError_WhenNameIsEmpty() {
+  void update_ReturnsError_WhenNameIsEmpty() {
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName("");
     testClient
         .put()
@@ -393,7 +393,7 @@ public class AnimeControllerITTests {
   @DisplayName(
       "update returns error when empty is returned and  user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  public void update_ReturnsError_WhenEmptyIsReturned() {
+  void update_ReturnsError_WhenEmptyIsReturned() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
     BDDMockito.when(repositoryMock.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
@@ -412,7 +412,7 @@ public class AnimeControllerITTests {
 
   @Test
   @DisplayName("update returns unauthorized when user isn't authenticated")
-  public void update_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+  void update_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
     BDDMockito.when(repositoryMock.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));

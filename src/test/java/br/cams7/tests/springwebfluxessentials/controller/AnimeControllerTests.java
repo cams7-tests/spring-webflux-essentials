@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-public class AnimeControllerTests {
+class AnimeControllerTests {
   @InjectMocks private AnimeController controller;
 
   @Mock private AnimeService service;
@@ -27,12 +27,12 @@ public class AnimeControllerTests {
   private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
   // @BeforeAll
-  // public static void blockHoundSetup() {
+  // static void blockHoundSetup() {
   //  BlockHound.install();
   // }
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     BDDMockito.when(service.findAll()).thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
     BDDMockito.when(service.findById(ArgumentMatchers.anyLong()))
         .thenReturn(Mono.just(createdAnime));
@@ -46,7 +46,7 @@ public class AnimeControllerTests {
   }
 
   /*@Test
-  public void blockHoundWorks() {
+  void blockHoundWorks() {
     var task =
         new FutureTask<>(
             () -> {
@@ -65,7 +65,7 @@ public class AnimeControllerTests {
 
   @Test
   @DisplayName("listAll returns all animes when successfull")
-  public void listAll_ReturnsAllAnimes_WhenSuccessful() {
+  void listAll_ReturnsAllAnimes_WhenSuccessful() {
     StepVerifier.create(controller.listAll())
         .expectSubscription()
         .expectNext(createdAnime)
@@ -75,7 +75,7 @@ public class AnimeControllerTests {
 
   @Test
   @DisplayName("findById returns an anime when successfull")
-  public void findById_ReturnsAnAnime_WhenSuccessful() {
+  void findById_ReturnsAnAnime_WhenSuccessful() {
     StepVerifier.create(controller.findById(1L))
         .expectSubscription()
         .expectNext(createdAnime)
@@ -84,7 +84,7 @@ public class AnimeControllerTests {
 
   @Test
   @DisplayName("save creates an anime when successfull")
-  public void save_CreatesAnAnime_WhenSuccessful() {
+  void save_CreatesAnAnime_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     StepVerifier.create(controller.save(animeToBeSaved))
         .expectSubscription()
@@ -94,7 +94,7 @@ public class AnimeControllerTests {
 
   @Test
   @DisplayName("saveBatch creates animes when successfull")
-  public void saveBatch_CreatesAnimes_WhenSuccessful() {
+  void saveBatch_CreatesAnimes_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     StepVerifier.create(
             controller.saveBatch(Set.of(animeToBeSaved, animeToBeSaved.withName("Death Note"))))
@@ -105,13 +105,13 @@ public class AnimeControllerTests {
 
   @Test
   @DisplayName("delete removes the anime when successfull")
-  public void delete_RemovesTheAnime_WhenSuccessful() {
+  void delete_RemovesTheAnime_WhenSuccessful() {
     StepVerifier.create(controller.delete(1L)).expectSubscription().verifyComplete();
   }
 
   @Test
   @DisplayName("update saves updated anime when successfull")
-  public void update_SavesUpdatedAnime_WhenSuccessful() {
+  void update_SavesUpdatedAnime_WhenSuccessful() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     var animeToBeUpdated = AnimeCreator.createAnimeToBeSaved().withName(updatedAnime.getName());
     StepVerifier.create(controller.update(1L, animeToBeUpdated))

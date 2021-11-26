@@ -34,7 +34,7 @@ public class User implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return Arrays.stream(authorities.split(","))
-        .map(authority -> authority.trim())
+        .map(String::trim)
         .map(SimpleGrantedAuthority::new)
         .collect(Collectors.toSet());
   }

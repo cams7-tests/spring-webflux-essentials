@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 @ExtendWith(SpringExtension.class)
-public class AnimeServiceTests {
+class AnimeServiceTests {
 
   @InjectMocks private AnimeService service;
 
@@ -29,12 +29,12 @@ public class AnimeServiceTests {
   private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
   // @BeforeAll
-  // public static void blockHoundSetup() {
+  // static void blockHoundSetup() {
   //  BlockHound.install();
   // }
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     BDDMockito.when(repository.findAll()).thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong()))
         .thenReturn(Mono.just(createdAnime));
@@ -46,7 +46,7 @@ public class AnimeServiceTests {
   }
 
   /*@Test
-  public void blockHoundWorks() {
+  void blockHoundWorks() {
     var task =
         new FutureTask<>(
             () -> {
@@ -65,7 +65,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("findAll returns all animes when successfull")
-  public void findAll_ReturnsAllAnimes_WhenSuccessful() {
+  void findAll_ReturnsAllAnimes_WhenSuccessful() {
     StepVerifier.create(service.findAll())
         .expectSubscription()
         .expectNext(createdAnime)
@@ -75,7 +75,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("findById returns an anime when successfull")
-  public void findById_ReturnsAnAnime_WhenSuccessful() {
+  void findById_ReturnsAnAnime_WhenSuccessful() {
     StepVerifier.create(service.findById(1L))
         .expectSubscription()
         .expectNext(createdAnime)
@@ -84,7 +84,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("findById returns error when empty is returned")
-  public void findById_ReturnsError_WhenEmptyIsReturned() {
+  void findById_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     StepVerifier.create(service.findById(1L))
         .expectSubscription()
@@ -94,7 +94,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("save creates an anime when successfull")
-  public void save_CreatesAnAnime_WhenSuccessful() {
+  void save_CreatesAnAnime_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     StepVerifier.create(service.save(animeToBeSaved))
         .expectSubscription()
@@ -104,7 +104,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("saveAll creates animes when successfull")
-  public void saveAll_CreatesAnimes_WhenSuccessful() {
+  void saveAll_CreatesAnimes_WhenSuccessful() {
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
     StepVerifier.create(
             service.saveAll(Set.of(animeToBeSaved, animeToBeSaved.withName("Death Note"))))
@@ -115,7 +115,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("saveAll returns error when one of the animes contains null or empty name")
-  public void saveAll_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
+  void saveAll_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
     BDDMockito.when(repository.saveAll(ArgumentMatchers.anySet()))
         .thenReturn(Flux.just(createdAnime, secoundCreatedAnime.withName("")));
     var animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
@@ -128,13 +128,13 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("delete removes the anime when successfull")
-  public void delete_RemovesTheAnime_WhenSuccessful() {
+  void delete_RemovesTheAnime_WhenSuccessful() {
     StepVerifier.create(service.delete(1L)).expectSubscription().verifyComplete();
   }
 
   @Test
   @DisplayName("delete returns error when empty is returned")
-  public void delete_ReturnsError_WhenEmptyIsReturned() {
+  void delete_ReturnsError_WhenEmptyIsReturned() {
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     StepVerifier.create(service.delete(1L))
         .expectSubscription()
@@ -144,7 +144,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("update saves updated anime when successfull")
-  public void update_SavesUpdatedAnime_WhenSuccessful() {
+  void update_SavesUpdatedAnime_WhenSuccessful() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     BDDMockito.when(repository.save(updatedAnime)).thenReturn(Mono.just(updatedAnime));
     StepVerifier.create(service.update(updatedAnime)).expectSubscription().verifyComplete();
@@ -152,7 +152,7 @@ public class AnimeServiceTests {
 
   @Test
   @DisplayName("update returns error when empty is returned")
-  public void update_ReturnsError_WhenEmptyIsReturned() {
+  void update_ReturnsError_WhenEmptyIsReturned() {
     var updatedAnime = AnimeCreator.createValidUpdatedAnime();
     BDDMockito.when(repository.findById(ArgumentMatchers.anyLong())).thenReturn(Mono.empty());
     StepVerifier.create(service.update(updatedAnime))
