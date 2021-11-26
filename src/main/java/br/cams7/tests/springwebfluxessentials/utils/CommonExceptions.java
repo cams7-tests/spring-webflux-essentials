@@ -5,6 +5,9 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 
 public final class CommonExceptions {
+
+  private CommonExceptions() {}
+
   public static <T> Mono<T> responseNotFoundException() {
     return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
