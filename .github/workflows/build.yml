@@ -10,12 +10,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
-    env:
-      R2DBC_DATABASE_URL: postgres-svc
-      R2DBC_DATABASE_USERNAME: spring_webflux_essentials
-      R2DBC_DATABASE_PASSWORD: abc12345
-      LOGGING: DEBUG
+    runs-on: ubuntu-latest   
 
     steps:
     - id: checkout
@@ -45,4 +40,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        R2DBC_DATABASE_URL: postgres-svc
+        R2DBC_DATABASE_USERNAME: spring_webflux_essentials
+        R2DBC_DATABASE_PASSWORD: abc12345
+        LOGGING: DEBUG
       run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cams7-tests_spring-webflux-essentials --file pom.xml
