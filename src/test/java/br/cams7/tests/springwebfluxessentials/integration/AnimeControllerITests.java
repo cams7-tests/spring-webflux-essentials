@@ -225,6 +225,24 @@ class AnimeControllerITests {
 
   @Test
   @DisplayName(
+      "saveBatch returns error when empty animes and user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
+  void saveBatch_ReturnsError_WhenEmptyAnimes() {
+    testClient
+        .post()
+        .uri("/animes/batch")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(Set.of()))
+        .exchange()
+        .expectStatus()
+        .is5xxServerError()
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo(500);
+  }
+
+  @Test
+  @DisplayName(
       "saveBatch returns error when one of the animes contains null or empty name and user is successfull authenticated and has role ADMIN")
   @WithUserDetails(ADMIN)
   void saveBatch_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
@@ -237,12 +255,32 @@ class AnimeControllerITests {
                 Set.of(ANIME_TO_BE_SAVED.withName("Death Note"), ANIME_TO_BE_SAVED.withName(""))))
         .exchange()
         .expectStatus()
-        .isBadRequest()
+        .is5xxServerError()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(400)
-        .jsonPath("$.message")
-        .isEqualTo("400 BAD_REQUEST \"Invalid name\"");
+        .isEqualTo(500);
+  }
+
+  @Test
+  @DisplayName(
+      "saveBatch returns error when one of the animes is duplicated and user is successfull authenticated and has role ADMIN")
+  @WithUserDetails(ADMIN)
+  void saveBatch_ReturnsError_WhenOneOfAnimesIsDuplicated() {
+    testClient
+        .post()
+        .uri("/animes/batch")
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(
+            BodyInserters.fromValue(
+                Set.of(
+                    ANIME_TO_BE_SAVED.withName("Death Note"),
+                    ANIME_TO_BE_SAVED.withName("Naruto"))))
+        .exchange()
+        .expectStatus()
+        .is5xxServerError()
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo(500);
   }
 
   @Test

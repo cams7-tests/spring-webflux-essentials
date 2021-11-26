@@ -24,13 +24,6 @@ import reactor.core.publisher.Mono;
 @Order(-2)
 public class GlobalExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-  /*public GlobalExceptionHandler(
-      ErrorAttributes errorAttributes,
-      ResourceProperties resourceProperties,
-      ApplicationContext applicationContext) {
-    super(errorAttributes, resourceProperties, applicationContext);
-  }*/
-
   public GlobalExceptionHandler(
       ErrorAttributes errorAttributes,
       Resources resources,

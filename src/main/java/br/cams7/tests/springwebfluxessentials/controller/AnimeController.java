@@ -8,9 +8,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import java.util.Set;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Validated
 @RequiredArgsConstructor
 // @Slf4j
 @RestController
@@ -68,7 +71,9 @@ public class AnimeController {
       summary = "Create new animes",
       tags = {"anime"},
       security = @SecurityRequirement(name = "Basic Authentication"))
-  public Flux<Anime> saveBatch(@RequestBody Set<Anime> animes) {
+  public Flux<Anime> saveBatch(
+      @RequestBody @NotEmpty(message = "Input movie list cannot be empty.")
+          Set<@Valid Anime> animes) {
     return service.saveAll(animes);
   }
 

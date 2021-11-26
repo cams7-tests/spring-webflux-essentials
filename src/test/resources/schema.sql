@@ -1,6 +1,6 @@
 CREATE TABLE tb_anime ( 
     id_anime IDENTITY NOT NULL PRIMARY KEY,
-    name VARCHAR NOT NULL
+    name VARCHAR NOT NULL UNIQUE
 );
 CREATE TABLE tb_user ( 
     id_user IDENTITY NOT NULL PRIMARY KEY,

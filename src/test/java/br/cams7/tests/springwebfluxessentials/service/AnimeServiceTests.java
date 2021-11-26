@@ -104,21 +104,6 @@ class AnimeServiceTests {
   }
 
   @Test
-  @DisplayName("saveAll returns error when one of the animes contains null or empty name")
-  void saveAll_ReturnsError_WhenOneOfAnimesContainsNullOrEmptyName() {
-    when(repository.saveAll(anySet()))
-        .thenReturn(
-            Flux.just(
-                ANIME_TO_BE_SAVED.withId(FIRST_ANIME_ID),
-                ANIME_TO_BE_SAVED.withId(SECOUND_ANIME_ID).withName("")));
-    create(service.saveAll(Set.of(ANIME_TO_BE_SAVED, ANIME_TO_BE_SAVED.withName(""))))
-        .expectSubscription()
-        .expectNext(ANIME_TO_BE_SAVED.withId(FIRST_ANIME_ID))
-        .expectError(ResponseStatusException.class)
-        .verify();
-  }
-
-  @Test
   @DisplayName("delete removes the anime when successfull")
   void delete_RemovesTheAnime_WhenSuccessful() {
     create(service.delete(DELETED_ANIME_ID)).expectSubscription().verifyComplete();

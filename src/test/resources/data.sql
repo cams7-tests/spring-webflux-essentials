@@ -13,7 +13,7 @@ INSERT INTO tb_anime(name) VALUES('Kengan Ashura');
 INSERT INTO tb_anime(name) VALUES('The Daily Life of the Immortal King');
 INSERT INTO tb_anime(name) VALUES('Hunter X Hunter: A Última Missão');
 INSERT INTO tb_anime(name) VALUES('Kakegurui');
-INSERT INTO tb_anime(name) VALUES('The Seven Deadly Sins');
+INSERT INTO tb_anime(name) VALUES('Demon Slayer: Kimetsu no Yaiba');
 INSERT INTO tb_anime(name) VALUES('Children of the Whales');
 --Password: abc12345
 INSERT INTO tb_user(name, username, password, authorities) VALUES('Some User', 'user', '{bcrypt}$2a$10$8RRftD6fhCnp0Psyl.8VGeRb6wEOuUX8bqsVqnWzTZXw2x.C0cepO', 'ROLE_USER');

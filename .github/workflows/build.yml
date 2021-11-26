@@ -11,6 +11,11 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      R2DBC_DATABASE_URL: postgres-svc
+      R2DBC_DATABASE_USERNAME: spring_webflux_essentials
+      R2DBC_DATABASE_PASSWORD: abc12345
+      LOGGING: DEBUG
 
     steps:
     - id: checkout
