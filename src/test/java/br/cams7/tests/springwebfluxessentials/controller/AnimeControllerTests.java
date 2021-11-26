@@ -26,11 +26,6 @@ class AnimeControllerTests {
   private static final Anime createdAnime = AnimeCreator.createValidAnime();
   private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
-  // @BeforeAll
-  // static void blockHoundSetup() {
-  //  BlockHound.install();
-  // }
-
   @BeforeEach
   void setUp() {
     BDDMockito.when(service.findAll()).thenReturn(Flux.just(createdAnime, secoundCreatedAnime));
@@ -44,24 +39,6 @@ class AnimeControllerTests {
     BDDMockito.when(service.update(AnimeCreator.createValidUpdatedAnime()))
         .thenReturn(Mono.empty());
   }
-
-  /*@Test
-  void blockHoundWorks() {
-    var task =
-        new FutureTask<>(
-            () -> {
-              Thread.sleep(0);
-              return "";
-            });
-    Schedulers.parallel().schedule(task);
-
-    try {
-      task.get(10, TimeUnit.SECONDS);
-      Assertions.fail("Should fail");
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-    }
-  }*/
 
   @Test
   @DisplayName("listAll returns all animes when successfull")

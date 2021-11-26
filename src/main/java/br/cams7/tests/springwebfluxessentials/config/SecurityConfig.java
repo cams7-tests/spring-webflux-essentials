@@ -41,9 +41,4 @@ public class SecurityConfig {
   public ReactiveAuthenticationManager authenticationManager(UserDetailsService service) {
     return new UserDetailsRepositoryReactiveAuthenticationManager(service);
   }
-
-  // public static void main(String[] args) {
-  //    System.out.println("Password:
-  // "+PasswordEncoderFactories.createDelegatingPasswordEncoder().encode("abc12345"));
-  // }
 }

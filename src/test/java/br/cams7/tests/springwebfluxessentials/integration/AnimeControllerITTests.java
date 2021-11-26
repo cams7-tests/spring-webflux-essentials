@@ -23,8 +23,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
-// @WebFluxTest
-// @Import({AnimeService.class, CustomAttributes.class})
 @SpringBootTest
 @AutoConfigureWebTestClient
 class AnimeControllerITTests {
@@ -39,11 +37,6 @@ class AnimeControllerITTests {
   private static final Anime createdAnime = AnimeCreator.createValidAnime();
   private static final Anime secoundCreatedAnime = createdAnime.withId(2L).withName("Death Note");
 
-  // @BeforeAll
-  // static void blockHoundSetup() {
-  //  BlockHound.install();
-  // }
-
   @BeforeEach
   void setUp() {
     BDDMockito.when(repositoryMock.findAll())
@@ -57,24 +50,6 @@ class AnimeControllerITTests {
     BDDMockito.when(repositoryMock.delete(ArgumentMatchers.any(Anime.class)))
         .thenReturn(Mono.empty());
   }
-
-  /*@Test
-  void blockHoundWorks() {
-    var task =
-        new FutureTask<>(
-            () -> {
-              Thread.sleep(0);
-              return "";
-            });
-    Schedulers.parallel().schedule(task);
-
-    try {
-      task.get(10, TimeUnit.SECONDS);
-      Assertions.fail("Should fail");
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      Assertions.assertTrue(e.getCause() instanceof BlockingOperationError);
-    }
-  }*/
 
   @Test
   @DisplayName(
