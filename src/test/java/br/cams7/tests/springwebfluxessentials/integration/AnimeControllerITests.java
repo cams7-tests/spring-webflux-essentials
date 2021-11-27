@@ -46,7 +46,7 @@ class AnimeControllerITests {
   void listAll_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
-        .uri("/animes")
+        .uri("/animes/all")
         .exchange()
         .expectStatus()
         .is2xxSuccessful()
@@ -68,7 +68,7 @@ class AnimeControllerITests {
   void listAll_Flavor2_ReturnsAllAnimes_WhenSuccessful() {
     testClient
         .get()
-        .uri("/animes")
+        .uri("/animes/all")
         .exchange()
         .expectStatus()
         .isOk()
@@ -79,13 +79,13 @@ class AnimeControllerITests {
   @Test
   @DisplayName("listAll returns unauthorized when user isn't authenticated")
   void listAll_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
-    testClient.get().uri("/animes").exchange().expectStatus().isUnauthorized();
+    testClient.get().uri("/animes/all").exchange().expectStatus().isUnauthorized();
   }
 
   @Test
-  @DisplayName("findById returns an anime when user is successfull authenticated and has role USER")
+  @DisplayName("getById returns an anime when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  void findById_ReturnsAnAnime_WhenSuccessful() {
+  void getById_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes/{id}", FIRST_ANIME_ID)
@@ -100,9 +100,9 @@ class AnimeControllerITests {
   }
 
   @Test
-  @DisplayName("findById returns an anime when user is successfull authenticated and has role USER")
+  @DisplayName("getById returns an anime when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  void findById_Flavor2_ReturnsAnAnime_WhenSuccessful() {
+  void getById_Flavor2_ReturnsAnAnime_WhenSuccessful() {
     testClient
         .get()
         .uri("/animes/{id}", FIRST_ANIME_ID)
@@ -115,9 +115,9 @@ class AnimeControllerITests {
 
   @Test
   @DisplayName(
-      "findById returns error when empty is returned and user is successfull authenticated and has role USER")
+      "getById returns error when empty is returned and user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
-  void findById_ReturnsError_WhenEmptyIsReturned() {
+  void getById_ReturnsError_WhenEmptyIsReturned() {
     testClient
         .get()
         .uri("/animes/{id}", INVALID_ANIME_ID)
@@ -132,8 +132,8 @@ class AnimeControllerITests {
   }
 
   @Test
-  @DisplayName("findById returns unauthorized when user isn't authenticated")
-  void findById_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+  @DisplayName("getById returns unauthorized when user isn't authenticated")
+  void getById_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
     testClient.get().uri("/animes/{id}", FIRST_ANIME_ID).exchange().expectStatus().isUnauthorized();
   }
 

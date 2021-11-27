@@ -6,6 +6,9 @@ import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.repository.AnimeRepository;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -18,6 +21,14 @@ public class AnimeService {
 
   public Flux<Anime> findAll() {
     return repository.findAll();
+  }
+
+  public Mono<Page<Anime>> findByPage(PageRequest pageable) {
+    return repository
+        .findAllBy(pageable)
+        .collectList()
+        .zipWith(repository.count())
+        .map(tuple2 -> new PageImpl<>(tuple2.getT1(), pageable, tuple2.getT2()));
   }
 
   public Mono<Anime> findById(Long id) {

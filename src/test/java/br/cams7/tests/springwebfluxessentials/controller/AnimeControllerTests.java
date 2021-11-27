@@ -64,9 +64,9 @@ class AnimeControllerTests {
   }
 
   @Test
-  @DisplayName("findById returns an anime when successfull")
-  void findById_ReturnsAnAnime_WhenSuccessful() {
-    create(controller.findById(FIRST_ANIME_ID))
+  @DisplayName("getById returns an anime when successfull")
+  void getById_ReturnsAnAnime_WhenSuccessful() {
+    create(controller.getById(FIRST_ANIME_ID))
         .expectSubscription()
         .expectNext(FIRST_ANIME)
         .verifyComplete();

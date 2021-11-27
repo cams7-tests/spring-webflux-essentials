@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -44,7 +47,7 @@ public class AnimeController {
 
   private final AnimeService service;
 
-  @GetMapping
+  @GetMapping("all")
   @ResponseStatus(HttpStatus.OK)
   @Operation(
       summary = "List all animes",
@@ -54,13 +57,24 @@ public class AnimeController {
     return service.findAll();
   }
 
+  @GetMapping
+  @ResponseStatus(HttpStatus.OK)
+  @Operation(
+      summary = "List animes",
+      tags = {OPERATION_TAGS},
+      security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
+  public Mono<Page<Anime>> listByPage(
+      @RequestParam("page") int page, @RequestParam("size") int size) {
+    return service.findByPage(PageRequest.of(page, size));
+  }
+
   @GetMapping(path = "{id}")
   @ResponseStatus(HttpStatus.OK)
   @Operation(
       summary = "Get the anime by id",
       tags = {OPERATION_TAGS},
       security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
-  public Mono<Anime> findById(@PathVariable Long id) {
+  public Mono<Anime> getById(@PathVariable Long id) {
     return service.findById(id);
   }
 
