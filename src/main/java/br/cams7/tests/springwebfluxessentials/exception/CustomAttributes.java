@@ -11,6 +11,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class CustomAttributes extends DefaultErrorAttributes {
+  private static final String MESSAGE_ATTRIBUTE = "message";
+  private static final String DEVELOPER_MESSAGE_ATTRIBUTE = "developerMessage";
+
   @Override
   public Map<String, Object> getErrorAttributes(
       ServerRequest request, ErrorAttributeOptions options) {
@@ -18,16 +21,17 @@ public class CustomAttributes extends DefaultErrorAttributes {
     var throwable = getError(request);
     if (throwable instanceof ResponseStatusException) {
       var exception = (ResponseStatusException) throwable;
-      errorAttributes.put("message", exception.getLocalizedMessage());
-      errorAttributes.put("developerMessage", "A ResponseStatusException happened");
+      errorAttributes.put(MESSAGE_ATTRIBUTE, exception.getLocalizedMessage());
+      errorAttributes.put(DEVELOPER_MESSAGE_ATTRIBUTE, "A ResponseStatusException happened");
     } else if (throwable instanceof ConstraintViolationException) {
       var exception = (ConstraintViolationException) throwable;
-      errorAttributes.put("message", exception.getLocalizedMessage());
-      errorAttributes.put("developerMessage", "A ConstraintViolationException happened");
+      errorAttributes.put(MESSAGE_ATTRIBUTE, exception.getLocalizedMessage());
+      errorAttributes.put(DEVELOPER_MESSAGE_ATTRIBUTE, "A ConstraintViolationException happened");
     } else if (throwable instanceof DataIntegrityViolationException) {
       var exception = (DataIntegrityViolationException) throwable;
-      errorAttributes.put("message", exception.getLocalizedMessage());
-      errorAttributes.put("developerMessage", "A DataIntegrityViolationException happened");
+      errorAttributes.put(MESSAGE_ATTRIBUTE, exception.getLocalizedMessage());
+      errorAttributes.put(
+          DEVELOPER_MESSAGE_ATTRIBUTE, "A DataIntegrityViolationException happened");
     }
     return errorAttributes;
   }
