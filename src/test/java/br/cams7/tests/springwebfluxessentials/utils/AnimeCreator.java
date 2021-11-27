@@ -11,18 +11,25 @@ public class AnimeCreator {
   public static long INVALID_ANIME_ID = 30l;
 
   public static Anime getAnimeToBeSaved() {
-    return Anime.builder().name("JoJo's Bizarre Adventure").build();
+    return Anime.builder().name("JoJo's Bizarre Adventure").publicationYear((short) 2012).build();
   }
 
   public static Anime getFirstAnime() {
-    return Anime.builder().id(FIRST_ANIME_ID).name("Naruto").build();
+    return Anime.builder().id(FIRST_ANIME_ID).name("Naruto").publicationYear((short) 1999).build();
   }
 
   public static Anime getSecoundAnime() {
-    return getFirstAnime().withId(SECOUND_ANIME_ID).withName("One Piece");
+    return getFirstAnime()
+        .withId(SECOUND_ANIME_ID)
+        .withName("One Piece")
+        .withPublicationYear((short) 1997);
   }
 
   public static Anime getUpdatedAnime() {
-    return Anime.builder().id(UPDATED_ANIME_ID).name("The Seven Deadly Sins").build();
+    return Anime.builder()
+        .id(UPDATED_ANIME_ID)
+        .name("The Seven Deadly Sins")
+        .publicationYear((short) 2012)
+        .build();
   }
 }

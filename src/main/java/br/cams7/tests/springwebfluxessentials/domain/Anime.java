@@ -1,6 +1,7 @@
 package br.cams7.tests.springwebfluxessentials.domain;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,4 +24,8 @@ public class Anime {
 
   @NotBlank(message = "The name of this anime cannot be empty")
   private String name;
+
+  @NotNull
+  @Column("publication_year")
+  private Short publicationYear;
 }

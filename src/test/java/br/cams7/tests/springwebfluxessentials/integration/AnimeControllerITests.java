@@ -216,11 +216,8 @@ class AnimeControllerITests {
         .exchange()
         .expectStatus()
         .isCreated()
-        .expectBody()
-        .jsonPath("$.[0].name")
-        .isEqualTo("Death Note")
-        .jsonPath("$.[1].name")
-        .isEqualTo("One-Punch Man");
+        .expectBodyList(Anime.class)
+        .hasSize(2);
   }
 
   @Test
