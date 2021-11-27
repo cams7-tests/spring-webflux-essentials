@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -19,20 +18,49 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class LogEntryExitAspect {
+public class LoggingAspect {
 
-  @Around("@annotation(br.cams7.tests.springwebfluxessentials.logging.LogEntryExit)")
-  public Object log(ProceedingJoinPoint point) throws Throwable {
+  private static final String LOGGING_PATH = "br.cams7.tests.springwebfluxessentials.logging";
+  private static final String SERVICE_PATH = "br.cams7.tests.springwebfluxessentials.service";
+
+  private static final LogLevel LEVEL = LogLevel.INFO;
+  private static final ChronoUnit UNIT = ChronoUnit.MILLIS;
+  private static final boolean SHOW_ARGS = true;
+  private static final boolean SHOW_RESULT = false;
+  private static final boolean SHOW_EXECUTION_TIME = true;
+
+  @Around("@annotation(" + LOGGING_PATH + ".LogEntryExit)")
+  public Object logMethodByAnnotation(ProceedingJoinPoint point) throws Throwable {
+    var methodSignature = (MethodSignature) point.getSignature();
+    Method method = methodSignature.getMethod();
+    var annotation = method.getAnnotation(LogEntryExit.class);
+
+    return log(
+        point,
+        annotation.value(),
+        annotation.unit(),
+        annotation.showArgs(),
+        annotation.showResult(),
+        annotation.showExecutionTime());
+  }
+
+  @Around("execution(* " + SERVICE_PATH + "..*(..)))")
+  public Object logMethod(ProceedingJoinPoint point) throws Throwable {
+    return log(point, LEVEL, UNIT, SHOW_ARGS, SHOW_RESULT, SHOW_EXECUTION_TIME);
+  }
+
+  private static Object log(
+      ProceedingJoinPoint point,
+      LogLevel level,
+      ChronoUnit unit,
+      boolean showArgs,
+      boolean showResult,
+      boolean showExecutionTime)
+      throws Throwable {
     var codeSignature = (CodeSignature) point.getSignature();
     var methodSignature = (MethodSignature) point.getSignature();
     Method method = methodSignature.getMethod();
     Logger logger = LoggerFactory.getLogger(method.getDeclaringClass());
-    var annotation = method.getAnnotation(LogEntryExit.class);
-    LogLevel level = annotation.value();
-    ChronoUnit unit = annotation.unit();
-    boolean showArgs = annotation.showArgs();
-    boolean showResult = annotation.showResult();
-    boolean showExecutionTime = annotation.showExecutionTime();
     String methodName = method.getName();
     Object[] methodArgs = point.getArgs();
     String[] methodParams = codeSignature.getParameterNames();
@@ -46,12 +74,12 @@ public class LogEntryExitAspect {
   }
 
   private static String entry(String methodName, boolean showArgs, String[] params, Object[] args) {
-    StringJoiner message = new StringJoiner(" ").add("Started").add(methodName).add("method");
+    var message = new StringJoiner(" ").add("Started").add(methodName).add("method");
     if (showArgs
         && Objects.nonNull(params)
         && Objects.nonNull(args)
         && params.length == args.length) {
-      Map<String, Object> values = new HashMap<>(params.length);
+      var values = new HashMap<>(params.length);
       for (int i = 0; i < params.length; i++) {
         values.put(params[i], args[i]);
       }
