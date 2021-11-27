@@ -169,7 +169,9 @@ class AnimeControllerITests {
         .isBadRequest()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(400);
+        .isEqualTo(400)
+        .jsonPath("$.developerMessage")
+        .isEqualTo("A ResponseStatusException happened");
   }
 
   @Test
@@ -235,7 +237,11 @@ class AnimeControllerITests {
         .is5xxServerError()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(500);
+        .isEqualTo(500)
+        .jsonPath("$.message")
+        .isEqualTo("saveBatch.animes: Input movie list cannot be empty.")
+        .jsonPath("$.developerMessage")
+        .isEqualTo("A ConstraintViolationException happened");
   }
 
   @Test
@@ -255,7 +261,11 @@ class AnimeControllerITests {
         .is5xxServerError()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(500);
+        .isEqualTo(500)
+        .jsonPath("$.message")
+        .isEqualTo("saveBatch.animes[].name: The name of this anime cannot be empty")
+        .jsonPath("$.developerMessage")
+        .isEqualTo("A ConstraintViolationException happened");
   }
 
   @Test
@@ -277,7 +287,9 @@ class AnimeControllerITests {
         .is5xxServerError()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(500);
+        .isEqualTo(500)
+        .jsonPath("$.developerMessage")
+        .isEqualTo("A DataIntegrityViolationException happened");
   }
 
   @Test
@@ -341,7 +353,9 @@ class AnimeControllerITests {
         .isNotFound()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(404);
+        .isEqualTo(404)
+        .jsonPath("$.developerMessage")
+        .isEqualTo("A ResponseStatusException happened");
   }
 
   @Test
@@ -393,7 +407,9 @@ class AnimeControllerITests {
         .isBadRequest()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(400);
+        .isEqualTo(400)
+        .jsonPath("$.developerMessage")
+        .isEqualTo("A ResponseStatusException happened");
   }
 
   @Test
@@ -411,7 +427,9 @@ class AnimeControllerITests {
         .isNotFound()
         .expectBody()
         .jsonPath("$.status")
-        .isEqualTo(404);
+        .isEqualTo(404)
+        .jsonPath("$.developerMessage")
+        .isEqualTo("A ResponseStatusException happened");
   }
 
   @Test
