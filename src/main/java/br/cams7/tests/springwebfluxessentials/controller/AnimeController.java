@@ -1,5 +1,7 @@
 package br.cams7.tests.springwebfluxessentials.controller;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.service.AnimeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,9 +31,16 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 // @Slf4j
 @RestController
-@RequestMapping("animes")
-@SecurityScheme(name = "Basic Authentication", type = SecuritySchemeType.HTTP, scheme = "basic")
+@RequestMapping(value = "animes", produces = APPLICATION_JSON_VALUE)
+@SecurityScheme(
+    name = AnimeController.SECURITY_SCHEME_NAME,
+    type = SecuritySchemeType.HTTP,
+    scheme = AnimeController.SECURITY_SCHEME_SCHEME)
 public class AnimeController {
+
+  public static final String SECURITY_SCHEME_NAME = "Basic Authentication";
+  public static final String SECURITY_SCHEME_SCHEME = "basic";
+  public static final String OPERATION_TAGS = "anime";
 
   private final AnimeService service;
 
@@ -39,8 +48,8 @@ public class AnimeController {
   @ResponseStatus(HttpStatus.OK)
   @Operation(
       summary = "List all animes",
-      tags = {"anime"},
-      security = @SecurityRequirement(name = "Basic Authentication"))
+      tags = {OPERATION_TAGS},
+      security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
   public Flux<Anime> listAll() {
     return service.findAll();
   }
@@ -49,8 +58,8 @@ public class AnimeController {
   @ResponseStatus(HttpStatus.OK)
   @Operation(
       summary = "Get the anime by id",
-      tags = {"anime"},
-      security = @SecurityRequirement(name = "Basic Authentication"))
+      tags = {OPERATION_TAGS},
+      security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
   public Mono<Anime> findById(@PathVariable Long id) {
     return service.findById(id);
   }
@@ -59,8 +68,8 @@ public class AnimeController {
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
       summary = "Create a new anime",
-      tags = {"anime"},
-      security = @SecurityRequirement(name = "Basic Authentication"))
+      tags = {OPERATION_TAGS},
+      security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
   public Mono<Anime> save(@Valid @RequestBody Anime anime) {
     return service.save(anime);
   }
@@ -69,8 +78,8 @@ public class AnimeController {
   @ResponseStatus(HttpStatus.CREATED)
   @Operation(
       summary = "Create new animes",
-      tags = {"anime"},
-      security = @SecurityRequirement(name = "Basic Authentication"))
+      tags = {OPERATION_TAGS},
+      security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
   public Flux<Anime> saveBatch(
       @RequestBody @NotEmpty(message = "Input movie list cannot be empty.")
           Set<@Valid Anime> animes) {
@@ -81,8 +90,8 @@ public class AnimeController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @Operation(
       summary = "Update the anime by id",
-      tags = {"anime"},
-      security = @SecurityRequirement(name = "Basic Authentication"))
+      tags = {OPERATION_TAGS},
+      security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
   public Mono<Void> update(@PathVariable Long id, @Valid @RequestBody Anime anime) {
     return service.update(anime.withId(id));
   }
@@ -92,8 +101,8 @@ public class AnimeController {
   @PreAuthorize("hasRole('ADMIN')")
   @Operation(
       summary = "Remove the anime by id",
-      tags = {"anime"},
-      security = @SecurityRequirement(name = "Basic Authentication"))
+      tags = {OPERATION_TAGS},
+      security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
   public Mono<Void> delete(@PathVariable Long id) {
     return service.delete(id);
   }
