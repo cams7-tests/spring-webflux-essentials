@@ -8,7 +8,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -23,7 +23,7 @@ public class AnimeService {
     return repository.findAll();
   }
 
-  public Mono<Page<Anime>> findByPage(PageRequest pageable) {
+  public Mono<Page<Anime>> findByPageable(Pageable pageable) {
     return repository
         .findAllBy(pageable)
         .collectList()

@@ -83,6 +83,50 @@ class AnimeControllerITests {
   }
 
   @Test
+  @DisplayName(
+      "listByPageable returns all animes when user is successfull authenticated and has role USER")
+  @WithUserDetails(USER)
+  void listByPageable_ReturnsAllAnimes_WhenSuccessful() {
+    testClient
+        .get()
+        .uri("/animes?page=0&size=3")
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.content[0].name")
+        .isEqualTo(FIRST_ANIME.getName())
+        .jsonPath("$.content[0].publicationYear")
+        .isEqualTo((int) FIRST_ANIME.getPublicationYear())
+        .jsonPath("$.content[1].name")
+        .isEqualTo(SECOUND_ANIME.getName())
+        .jsonPath("$.content[1].publicationYear")
+        .isEqualTo((int) SECOUND_ANIME.getPublicationYear())
+        .jsonPath("$.pageable.pageNumber")
+        .isEqualTo(0)
+        .jsonPath("$.pageable.pageSize")
+        .isEqualTo(3)
+        .jsonPath("$.last")
+        .isEqualTo(false)
+        .jsonPath("$.number")
+        .isEqualTo(0)
+        .jsonPath("$.first")
+        .isEqualTo(true)
+        .jsonPath("$.numberOfElements")
+        .isEqualTo(3)
+        .jsonPath("$.size")
+        .isEqualTo(3)
+        .jsonPath("$.empty")
+        .isEqualTo(false);
+  }
+
+  @Test
+  @DisplayName("listByPageable returns unauthorized when user isn't authenticated")
+  void listByPageable_ReturnsUnauthorized_WhenUserIsNotAuthenticated() {
+    testClient.get().uri("/animes?page=0&size=3").exchange().expectStatus().isUnauthorized();
+  }
+
+  @Test
   @DisplayName("getById returns an anime when user is successfull authenticated and has role USER")
   @WithUserDetails(USER)
   void getById_ReturnsAnAnime_WhenSuccessful() {

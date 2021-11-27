@@ -16,6 +16,7 @@ import static reactor.test.StepVerifier.create;
 
 import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.service.AnimeService;
+import java.util.Arrays;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,6 +42,8 @@ class AnimeControllerTests {
   private static final Anime FIRST_ANIME = getFirstAnime();
   private static final Anime SECOUND_ANIME = getSecoundAnime();
   private static final Anime UPDATED_ANIME = getUpdatedAnime();
+  private static final Page<Anime> PAGE =
+      new PageImpl<>(Arrays.asList(FIRST_ANIME, SECOUND_ANIME), PageRequest.of(0, 3), 2);
 
   @BeforeEach
   void setUp() {
@@ -51,6 +58,7 @@ class AnimeControllerTests {
                 ANIME_TO_BE_SAVED.withId(SECOUND_ANIME_ID).withName("Death Note")));
     when(service.delete(anyLong())).thenReturn(Mono.empty());
     when(service.update(any(Anime.class))).thenReturn(Mono.empty());
+    when(service.findByPageable(any(Pageable.class))).thenReturn(Mono.just(PAGE));
   }
 
   @Test
@@ -61,6 +69,12 @@ class AnimeControllerTests {
         .expectNext(FIRST_ANIME)
         .expectNext(SECOUND_ANIME)
         .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("listByPageable returns an anime when successfull")
+  void listByPageable_ReturnsAnAnime_WhenSuccessful() {
+    create(controller.listByPageable(0, 3)).expectSubscription().expectNext(PAGE).verifyComplete();
   }
 
   @Test

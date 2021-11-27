@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -52,6 +54,9 @@ class AnimeServiceTests {
                 ANIME_TO_BE_SAVED.withId(FIRST_ANIME_ID),
                 ANIME_TO_BE_SAVED.withId(SECOUND_ANIME_ID).withName("Death Note")));
     when(repository.delete(any(Anime.class))).thenReturn(Mono.empty());
+    when(repository.findAllBy(any(Pageable.class)))
+        .thenReturn(Flux.just(FIRST_ANIME, SECOUND_ANIME));
+    when(repository.count()).thenReturn(Mono.just(2l));
   }
 
   @Test
@@ -61,6 +66,15 @@ class AnimeServiceTests {
         .expectSubscription()
         .expectNext(FIRST_ANIME)
         .expectNext(SECOUND_ANIME)
+        .verifyComplete();
+  }
+
+  @Test
+  @DisplayName("findByPageable returns all animes when successfull")
+  void findByPageable_ReturnsAllAnimes_WhenSuccessful() {
+    create(service.findByPageable(PageRequest.of(0, 1)))
+        .expectSubscription()
+        .expectNextCount(1)
         .verifyComplete();
   }
 

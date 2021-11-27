@@ -63,9 +63,9 @@ public class AnimeController {
       summary = "List animes",
       tags = {OPERATION_TAGS},
       security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
-  public Mono<Page<Anime>> listByPage(
+  public Mono<Page<Anime>> listByPageable(
       @RequestParam("page") int page, @RequestParam("size") int size) {
-    return service.findByPage(PageRequest.of(page, size));
+    return service.findByPageable(PageRequest.of(page, size));
   }
 
   @GetMapping(path = "{id}")
