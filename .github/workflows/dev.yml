@@ -28,9 +28,9 @@ jobs:
 
     - id: build-maven-app
       name: Buid Maven application
-      uses: cams7-devops/cicd/build-maven@99c79f42a1d274c523cd3606b88bc704de915423      
-#      with:
-#        logging: DEBUG
+      uses: cams7-devops/cicd/build-maven@e37ab8954521605a689fc5702782c49a0fa9d92d      
+      with:
+        logging: DEBUG
 #        github-token: ${{ secrets.GITHUB_TOKEN }}
 #        sonar-token: ${{ secrets.SONARQUBE_TOKEN }}
 #        sonar-host-url: ${{ secrets.SONARQUBE_HOST_URL }}
