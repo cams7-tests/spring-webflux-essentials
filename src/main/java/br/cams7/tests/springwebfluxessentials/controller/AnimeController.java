@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import br.cams7.tests.springwebfluxessentials.domain.Anime;
 import br.cams7.tests.springwebfluxessentials.service.AnimeService;
+import br.cams7.tests.springwebfluxessentials.utils.Pagination;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -64,8 +65,12 @@ public class AnimeController {
       tags = {OPERATION_TAGS},
       security = @SecurityRequirement(name = SECURITY_SCHEME_NAME))
   public Mono<Page<Anime>> listByPageable(
-      @RequestParam("page") int page, @RequestParam("size") int size) {
-    return service.findByPageable(PageRequest.of(page, size));
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "size", defaultValue = "10") int size,
+      @RequestParam(name = "sort", defaultValue = "id") String sortField,
+      @RequestParam(name = "dir", defaultValue = "asc") String sortDirection) {
+    var sort = Pagination.getSort(sortField, sortDirection);
+    return service.findByPageable(PageRequest.of(page, size).withSort(sort));
   }
 
   @GetMapping(path = "{id}")

@@ -74,7 +74,10 @@ class AnimeControllerTests {
   @Test
   @DisplayName("listByPageable returns an anime when successfull")
   void listByPageable_ReturnsAnAnime_WhenSuccessful() {
-    create(controller.listByPageable(0, 3)).expectSubscription().expectNext(PAGE).verifyComplete();
+    create(controller.listByPageable(0, 3, "name", "desc"))
+        .expectSubscription()
+        .expectNext(PAGE)
+        .verifyComplete();
   }
 
   @Test
