@@ -62,7 +62,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "Deploy Action"
-        git commit -am "Update verson to ${{ mvn -s settings.xml -B help:evaluate -Dexpression=project.version -q -DforceStdout }}"
+        git commit -am "Update version"
 
     - id: push
       name : Push
