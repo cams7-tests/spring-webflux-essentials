@@ -43,6 +43,14 @@ jobs:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
+
+    - id: tests
+      name: Tests
+      run: mvn -s settings.xml -B test --file pom.xml
+
+    - id: update-version
+      name: Update version
+      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT versions:commit
         
     - id: verify-and-analyze
       name: Verify and analyze
@@ -52,11 +60,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}
 #      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cams7-tests_spring-webflux-essentials --file pom.xml
-      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --file pom.xml
-
-    - id: update-version
-      name: Update version
-      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT versions:commit
+      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
 
     - id: build-and-deploy
       name: Build and deploy
