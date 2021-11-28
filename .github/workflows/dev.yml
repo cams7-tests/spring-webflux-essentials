@@ -38,13 +38,13 @@ jobs:
 
     - name: Download Maven
       run: |
-        curl -sL https://www-eu.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip -o maven.zip
+        curl -sL https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.zip -o maven.zip
         apt-get update
         apt-get -y install unzip
-        unzip -d /usr/share maven.zip
+        unzip -d /home/github maven.zip
         rm maven.zip
-        ln -s /usr/share/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
-        echo "M2_HOME=/usr/share/apache-maven-3.6.3" | tee -a /etc/environment
+        ln -s /home/github/apache-maven-3.8.4/bin/mvn /usr/bin/mvn
+        echo "M2_HOME=/home/github/apache-maven-3.8.4" | tee -a /etc/environment
         
     - id: build-and-analyze
       name: Build and analyze
