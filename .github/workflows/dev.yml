@@ -10,14 +10,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: self-hosted
-    env:
-      NEXUS3_USERNAME: ${{ secrets.NEXUS3_USERNAME }}
-      NEXUS3_PASSWORD: ${{ secrets.NEXUS3_PASSWORD }}
-      R2DBC_DATABASE_URL: postgres-svc
-      R2DBC_DATABASE_USERNAME: spring_webflux_essentials
-      R2DBC_DATABASE_PASSWORD: abc12345
-      LOGGING: DEBUG   
+    runs-on: self-hosted    
 
     steps:
     - id: checkout
@@ -25,54 +18,20 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+    - id: build-maven-app
+      name: Buid Maven application
+      uses: cams7-devops/cicd/build-maven@8cf760c85f2638f8ee14d9e74b47326aa6115749
+      with:
+        logging: DEBUG
+      secrets:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        sonar-token: ${{ secrets.SONARQUBE_TOKEN }}
+        sonar-host-url: ${{ secrets.SONARQUBE_HOST_URL }}
+        nexus3-username: ${{ secrets.NEXUS3_USERNAME }}
+        nexus3-password: ${{ secrets.NEXUS3_PASSWORD }}
+        r2dbc-database-url: ${{ secrets.R2DBC_DATABASE_URL }}
+        r2dbc-database-username: ${{ secrets.R2DBC_DATABASE_USERNAME }}
+        r2dbc-database-password: ${{ secrets.R2DBC_DATABASE_PASSWORD }}
     
-    - id: set-up-jdk11 
-      name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'adopt'
-        cache: maven
-        
-#    - id: cache-sonarcloud-packages
-    - id: cache-sonarqube-packages
-#      name: Cache SonarCloud packages
-      name: Cache SonarQube packages
-      uses: actions/cache@v2
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-
-    - id: tests
-      name: Tests
-      run: mvn -s settings.xml -B test --file pom.xml
-
-    - id: update-version
-      name: Update version
-      run: mvn -s settings.xml -B build-helper:parse-version versions:set -DnewVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT versions:commit
-        
-    - id: verify-and-analyze
-      name: Verify and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}
-#      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cams7-tests_spring-webflux-essentials --file pom.xml
-      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -DskipTests --file pom.xml
-
-    - id: build-and-deploy
-      name: Build and deploy
-      run: mvn -s settings.xml -B clean package deploy -DskipTests --file pom.xml
-
-    - id: commit
-      name: Commit
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "Deploy Action"
-        git commit -am "Update version"
-
-    - id: push
-      name : Push
-      uses: ad-m/github-push-action@master
+    
