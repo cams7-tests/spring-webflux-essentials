@@ -28,12 +28,12 @@ jobs:
 
     - id: build-maven-app
       name: Buid Maven application
-      uses: cams7-devops/cicd/build-maven@a5207995c03bc0402ecef19a66e172bb67f83b40      
-      with:
+      uses: cams7-devops/cicd/build-maven@99c79f42a1d274c523cd3606b88bc704de915423      
+#      with:
 #        logging: DEBUG
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        sonar-token: ${{ secrets.SONARQUBE_TOKEN }}
-        sonar-host-url: ${{ secrets.SONARQUBE_HOST_URL }}
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
+#        sonar-token: ${{ secrets.SONARQUBE_TOKEN }}
+#        sonar-host-url: ${{ secrets.SONARQUBE_HOST_URL }}
 #        nexus3-username: ${{ secrets.NEXUS3_USERNAME }}
 #        nexus3-password: ${{ secrets.NEXUS3_PASSWORD }}
 #        r2dbc-database-url: ${{ secrets.R2DBC_DATABASE_URL }}
