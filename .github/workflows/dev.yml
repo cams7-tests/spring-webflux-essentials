@@ -10,14 +10,7 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: self-hosted
-    env:
-      NEXUS3_USERNAME: ${{ secrets.NEXUS3_USERNAME }}
-      NEXUS3_PASSWORD: ${{ secrets.NEXUS3_PASSWORD }}
-      R2DBC_DATABASE_URL: postgres-svc
-      R2DBC_DATABASE_USERNAME: spring_webflux_essentials
-      R2DBC_DATABASE_PASSWORD: abc12345
-      LOGGING: DEBUG
+    runs-on: self-hosted    
 
     steps:
     - id: checkout
@@ -28,7 +21,14 @@ jobs:
 
     - id: build-maven-app
       name: Buid Maven application
-      uses: cams7-devops/cicd/build-maven@e37ab8954521605a689fc5702782c49a0fa9d92d      
+      uses: cams7-devops/cicd/build-maven@e37ab8954521605a689fc5702782c49a0fa9d92d
+      env:
+        NEXUS3_USERNAME: ${{ secrets.NEXUS3_USERNAME }}
+        NEXUS3_PASSWORD: ${{ secrets.NEXUS3_PASSWORD }}
+        R2DBC_DATABASE_URL: postgres-svc
+        R2DBC_DATABASE_USERNAME: spring_webflux_essentials
+        R2DBC_DATABASE_PASSWORD: abc12345
+        LOGGING: DEBUG      
       with:
         logging: DEBUG
 #        github-token: ${{ secrets.GITHUB_TOKEN }}
