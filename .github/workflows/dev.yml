@@ -11,7 +11,13 @@ jobs:
   build:
     name: Build
     runs-on: self-hosted
-
+    env:
+      NEXUS3_USERNAME: ${{ secrets.NEXUS3_USERNAME }}
+      NEXUS3_PASSWORD: ${{ secrets.NEXUS3_PASSWORD }}
+      R2DBC_DATABASE_URL: postgres-svc
+      R2DBC_DATABASE_USERNAME: spring_webflux_essentials
+      R2DBC_DATABASE_PASSWORD: abc12345
+      LOGGING: DEBUG
 
     steps:
     - id: checkout
@@ -22,19 +28,12 @@ jobs:
 
     - id: build-maven-app
       name: Buid Maven application
-      uses: cams7-devops/cicd/build-maven@75deaadcd9d0957b222b19d66b20d4d1bce4629f
-      env:
-        NEXUS3_USERNAME: ${{ secrets.NEXUS3_USERNAME }}
-        NEXUS3_PASSWORD: ${{ secrets.NEXUS3_PASSWORD }}
-        R2DBC_DATABASE_URL: postgres-svc
-        R2DBC_DATABASE_USERNAME: spring_webflux_essentials
-        R2DBC_DATABASE_PASSWORD: abc12345
-        LOGGING: DEBUG
-#      with:
+      uses: cams7-devops/cicd/build-maven@a5207995c03bc0402ecef19a66e172bb67f83b40      
+      with:
 #        logging: DEBUG
-#        github-token: ${{ secrets.GITHUB_TOKEN }}
-#        sonar-token: ${{ secrets.SONARQUBE_TOKEN }}
-#        sonar-host-url: ${{ secrets.SONARQUBE_HOST_URL }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        sonar-token: ${{ secrets.SONARQUBE_TOKEN }}
+        sonar-host-url: ${{ secrets.SONARQUBE_HOST_URL }}
 #        nexus3-username: ${{ secrets.NEXUS3_USERNAME }}
 #        nexus3-password: ${{ secrets.NEXUS3_PASSWORD }}
 #        r2dbc-database-url: ${{ secrets.R2DBC_DATABASE_URL }}
