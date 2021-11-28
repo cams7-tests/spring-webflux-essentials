@@ -6,7 +6,7 @@ CREATE TABLE tb_anime (
 CREATE TABLE tb_user ( 
     id_user IDENTITY NOT NULL PRIMARY KEY,
     name VARCHAR NOT NULL,
-	username VARCHAR NOT NULL,
+	username VARCHAR NOT NULL UNIQUE,
 	password VARCHAR NOT NULL,
 	authorities VARCHAR NOT NULL
 );
