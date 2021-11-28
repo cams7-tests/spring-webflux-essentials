@@ -35,16 +35,6 @@ jobs:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
-
-    - name: Download Maven
-      run: |
-        curl -sL https://dlcdn.apache.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.zip -o maven.zip
-        apt-get update
-        apt-get -y install unzip
-        unzip -d /home/github maven.zip
-        rm maven.zip
-        ln -s /home/github/apache-maven-3.8.4/bin/mvn /usr/bin/mvn
-        echo "M2_HOME=/home/github/apache-maven-3.8.4" | tee -a /etc/environment
         
     - id: build-and-analyze
       name: Build and analyze
