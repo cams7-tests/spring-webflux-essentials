@@ -60,9 +60,9 @@ jobs:
     - id: commit
       name: Commit
       run: |
-        git config --local user.email "${{ inputs.gitEmail }}"
-        git config --local user.name "${{ inputs.gitUsername }}"
-        git commit -am "Update verson ${{ inputs.gitCommitMessage }}"
+        git config --local user.email "action@github.com"
+        git config --local user.name "Deploy Action"
+        git commit -am "Update verson to ${{ mvn -s settings.xml -B help:evaluate -Dexpression=project.version -q -DforceStdout }}"
 
     - id: push
       name : Push
