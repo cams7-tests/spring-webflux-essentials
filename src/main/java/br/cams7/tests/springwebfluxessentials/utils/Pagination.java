@@ -6,6 +6,8 @@ import org.springframework.util.ObjectUtils;
 
 public final class Pagination {
 
+  private Pagination() {}
+
   public static Sort getSort(String field, String direction) {
     var sort = Sort.by(!ObjectUtils.isEmpty(field) ? field : "id");
     if (SortDirection.DESCENDING.equals(SortDirection.getDirection(direction)))
@@ -16,7 +18,7 @@ public final class Pagination {
   }
 
   @AllArgsConstructor
-  private static enum SortDirection {
+  private enum SortDirection {
     ASCENDING("asc"),
     DESCENDING("desc");
 
