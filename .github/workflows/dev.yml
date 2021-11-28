@@ -21,7 +21,7 @@ jobs:
 
     - id: build-maven-app
       name: Buid Maven application
-      uses: cams7-devops/cicd/build-maven@94cc824b3e8ec336233f00b769a559ff46d62854
+      uses: cams7-devops/cicd/build-maven@dc8626c92a9010686de3ac1e9d44aa8e95c7f3fb
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
