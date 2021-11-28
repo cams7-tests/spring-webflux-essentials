@@ -20,8 +20,9 @@
 		<java.version>11</java.version>
 		<blockhound.version>1.0.6.RELEASE</blockhound.version>
 		<springdoc.version>1.5.12</springdoc.version>
-        <sonar.organization>cams7-tests</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <!--sonar.organization>cams7-tests</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url -->
+		<sonar.projectKey>cams7-tests_spring-webflux-essentials</sonar.projectKey>
     </properties>
 
 	<dependencies>		

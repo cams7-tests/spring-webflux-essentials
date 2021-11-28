@@ -34,8 +34,10 @@ jobs:
         distribution: 'adopt'
         cache: maven
         
-    - id: cache-sonarcloud-packages
-      name: Cache SonarCloud packages
+#    - id: cache-sonarcloud-packages
+    - id: cache-sonarqube-packages
+#      name: Cache SonarCloud packages
+      name: Cache SonarQube packages
       uses: actions/cache@v1
       with:
         path: ~/.sonar/cache
@@ -46,8 +48,11 @@ jobs:
       name: Verify and analyze
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cams7-tests_spring-webflux-essentials --file pom.xml
+#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}
+#      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cams7-tests_spring-webflux-essentials --file pom.xml
+      run: mvn -s settings.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --file pom.xml
 
     - id: update-version
       name: Update version
