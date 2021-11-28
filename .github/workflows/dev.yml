@@ -12,13 +12,13 @@ jobs:
     name: Build
 #    runs-on: ubuntu-latest
     runs-on: self-hosted
-     env:
-        NEXUS3_USERNAME: ${{ secrets.NEXUS3_USERNAME }}
-        NEXUS3_PASSWORD: ${{ secrets.NEXUS3_PASSWORD }}
-        R2DBC_DATABASE_URL: postgres-svc
-        R2DBC_DATABASE_USERNAME: spring_webflux_essentials
-        R2DBC_DATABASE_PASSWORD: abc12345
-        LOGGING: DEBUG   
+    env:
+      NEXUS3_USERNAME: ${{ secrets.NEXUS3_USERNAME }}
+      NEXUS3_PASSWORD: ${{ secrets.NEXUS3_PASSWORD }}
+      R2DBC_DATABASE_URL: postgres-svc
+      R2DBC_DATABASE_USERNAME: spring_webflux_essentials
+      R2DBC_DATABASE_PASSWORD: abc12345
+      LOGGING: DEBUG   
 
     steps:
     - id: checkout
